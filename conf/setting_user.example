@@ -1,0 +1,16 @@
+<?php 
+$config['database'] = array (
+  'DB_TYPE' => 'mysqli',
+  'DB_HOST' => 'MYSQL_SERVER',
+  'DB_PORT' => 'MYSQL_PORT',
+  'DB_USER' => 'MYSQL_USER',
+  'DB_PWD' => 'MYSQL_PASSWORD',
+  'DB_NAME' => 'MYSQL_DATABASE',
+  'DB_SQL_LOG' => true,
+  'DB_FIELDS_CACHE' => true,
+  'DB_SQL_BUILD_CACHE' => false,
+);
+$config['cache']['sessionType'] = 'SESSION_TYPE';
+$config['cache']['cacheType'] = 'SESSION_TYPE';
+$config['cache']['SESSION_TYPE']['host'] = 'SESSION_HOST';
+$config['cache']['SESSION_TYPE']['port'] = 'SESSION_PORT';
