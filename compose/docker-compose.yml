@@ -13,6 +13,7 @@ services:
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
+    restart: always
     secrets:
       - mysql_db
       - mysql_password
