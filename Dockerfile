@@ -4,7 +4,7 @@ ENV php_conf /usr/local/etc/php-fpm.conf
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 
-ENV KODBOX_VERSION 1.14
+ENV KODBOX_VERSION 1.15
 ENV NGINX_VERSION 1.18.0
 ENV LUA_MODULE_VERSION 0.10.14
 ENV DEVEL_KIT_MODULE_VERSION 0.3.0
@@ -170,6 +170,7 @@ RUN echo @testing http://mirrors.aliyun.com/alpine/edge/testing >> /etc/apk/repo
     linux-headers \
     libmcrypt-dev \
     libpng-dev \
+    libmemcached-dev \
     icu-dev \
     libpq \
     libxslt-dev \
@@ -191,11 +192,15 @@ RUN echo @testing http://mirrors.aliyun.com/alpine/edge/testing >> /etc/apk/repo
       --with-freetype \
       --with-jpeg && \
     docker-php-ext-configure ldap && \
-    #curl iconv session
-    #docker-php-ext-install pdo_mysql pdo_sqlite mysqli mcrypt gd exif intl xsl json soap dom zip opcache && \
     docker-php-ext-install iconv pdo_mysql pdo_sqlite pgsql pdo_pgsql mysqli gd exif intl xsl json soap dom zip opcache ldap && \
-    pecl install -o -f redis && \
-    echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini && \
+    pecl install memcached; \
+    pecl install redis; \
+    \
+    docker-php-ext-enable \
+        memcached \
+        redis \
+    ; \
+    \
     docker-php-source delete && \
     mkdir -p /etc/nginx && \
     mkdir -p /run/nginx && \

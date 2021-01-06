@@ -1,6 +1,6 @@
 -- dump by kodbox 
-use kod_box;
 SET NAMES utf8;
+use kod_box;
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (

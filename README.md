@@ -1,18 +1,18 @@
 # 1.快速启动
 ```
-docker run -d -p 80:80 kodcloud/kodbox:v1.14
+docker run -d -p 80:80 kodcloud/kodbox:v1.15
 ```
 # 2.实现数据持久化——创建数据目录并在启动时挂载
 ```
 mkdir /data
-docker run -d -p 80:80 -v /data:/var/www/html kodcloud/kodbox:v1.14
+docker run -d -p 80:80 -v /data:/var/www/html kodcloud/kodbox:v1.15
 ```
 # 3.以https方式启动
 
 -  使用 LetsEncrypt 免费ssl证书
     - 80:80 不能省略
         ```
-        docker run -d -p 80:80 -p 443:443  -e DOMAIN="你的域名" -e EMAIL="你的邮箱" --name kodbox kodcloud/kodbox:v1.14
+        docker run -d -p 80:80 -p 443:443  -e DOMAIN="你的域名" -e EMAIL="你的邮箱" --name kodbox kodcloud/kodbox:v1.15
         ```
     - 生成证书并配置nginx的https
         ```
@@ -25,7 +25,7 @@ docker run -d -p 80:80 -v /data:/var/www/html kodcloud/kodbox:v1.14
 -  使用已有ssl证书
     - 证书格式必须是 fullchain.pem  privkey.pem
         ```
-        docker run -d -p 443:443  -v "你的证书目录":/etc/nginx/ssl --name kodbox kodcloud/kodbox:v1.14
+        docker run -d -p 443:443  -v "你的证书目录":/etc/nginx/ssl --name kodbox kodcloud/kodbox:v1.15
         ```
 
 # 4.[使用docker-compose同时部署数据库（推荐）](https://github.com/KodCloud-dev/docker)
@@ -60,7 +60,7 @@ services:
       - mysql_user
 
   app:
-    image: kodcloud/kodbox:v1.14
+    image: kodcloud/kodbox:v1.15
     ports:
       - 80:80
     links:
