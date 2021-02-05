@@ -16,7 +16,7 @@ services:
     restart: always
     
   app:
-    image: box:fpm12
+    image: kodcloud/kodbox:v1.15-fpm-alpine
     volumes:
       - "./data:/var/www/html"
     environment:
@@ -30,7 +30,7 @@ services:
   web:
     image: nginx:1.19.2
     ports:
-      - 88:80
+      - 80:80
     links:
       - db
       - redis
