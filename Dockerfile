@@ -4,7 +4,7 @@ ENV php_conf /usr/local/etc/php-fpm.conf
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 
-ENV KODBOX_VERSION 1.15
+#ENV KODBOX_VERSION 1.15
 ENV NGINX_VERSION 1.18.0
 ENV LUA_MODULE_VERSION 0.10.14
 ENV DEVEL_KIT_MODULE_VERSION 0.3.0
@@ -225,11 +225,11 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o kodbox.zip \
-        "http://static.kodcloud.com/update/download/kodbox.${KODBOX_VERSION}.zip"; \
+        "http://192.168.1.196:81/101/src.zip"; \
     export GNUPGHOME="$(mktemp -d)"; \
 	mkdir /usr/src/kodbox; \
     unzip -d /usr/src/kodbox kodbox.zip; \
-    sed -i "s/'chunkSize'			=> 0.5,/'chunkSize'			=> 5,/g" /usr/src/kodbox/config/setting.php; \
+#    sed -i "s/'chunkSize'			=> 0.5,/'chunkSize'			=> 5,/g" /usr/src/kodbox/config/setting.php; \
     apk del .fetch-deps
 
 # nginx site conf
