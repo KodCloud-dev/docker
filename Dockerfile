@@ -1,236 +1,34 @@
-FROM php:7.4.9-fpm-alpine3.11
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.4-fpm-alpine3.13
 
-ENV php_conf /usr/local/etc/php-fpm.conf
-ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
-ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
+ENV KODBOX_VERSION 1.18
 
-#ENV KODBOX_VERSION 1.15
-ENV NGINX_VERSION 1.18.0
-ENV LUA_MODULE_VERSION 0.10.14
-ENV DEVEL_KIT_MODULE_VERSION 0.3.0
-ENV LUAJIT_LIB=/usr/lib
-ENV LUAJIT_INC=/usr/include/luajit-2.1
-
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
-RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
-  && CONFIG="\
-    --prefix=/etc/nginx \
-    --sbin-path=/usr/sbin/nginx \
-    --modules-path=/usr/lib/nginx/modules \
-    --conf-path=/etc/nginx/nginx.conf \
-    --error-log-path=/var/log/nginx/error.log \
-    --http-log-path=/var/log/nginx/access.log \
-    --pid-path=/var/run/nginx.pid \
-    --lock-path=/var/run/nginx.lock \
-    --http-client-body-temp-path=/var/cache/nginx/client_temp \
-    --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-    --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
-    --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-    --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-    --user=nginx \
-    --group=nginx \
-    --with-http_ssl_module \
-    --with-http_realip_module \
-    --with-http_addition_module \
-    --with-http_sub_module \
-    --with-http_dav_module \
-    --with-http_flv_module \
-    --with-http_mp4_module \
-    --with-http_gunzip_module \
-    --with-http_gzip_static_module \
-    --with-http_random_index_module \
-    --with-http_secure_link_module \
-    --with-http_stub_status_module \
-    --with-http_auth_request_module \
-    --with-http_xslt_module=dynamic \
-    --with-http_image_filter_module=dynamic \
-    --with-http_perl_module=dynamic \
-    --with-threads \
-    --with-stream \
-    --with-stream_ssl_module \
-    --with-stream_ssl_preread_module \
-    --with-stream_realip_module \
-    --with-http_v2_module \
-    --add-module=/usr/src/ngx_devel_kit-$DEVEL_KIT_MODULE_VERSION \
-    --add-module=/usr/src/lua-nginx-module-$LUA_MODULE_VERSION \
-  " \
-  && addgroup -S nginx \
-  && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \ 
-  && apk add --no-cache --virtual .build-deps \
-    autoconf \
-    gcc \
-    libc-dev \
-    make \
-    libressl-dev \
-    pcre-dev \
-    zlib-dev \
-    linux-headers \
-    curl \
-    gnupg \
-    libxslt-dev \
-    gd-dev \
-    libmaxminddb-dev \
-    perl-dev \
-    luajit-dev \
-  && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-  && curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
-  && curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v$DEVEL_KIT_MODULE_VERSION.tar.gz -o ndk.tar.gz \
-  && curl -fSL https://github.com/openresty/lua-nginx-module/archive/v$LUA_MODULE_VERSION.tar.gz -o lua.tar.gz \
-  && export GNUPGHOME="$(mktemp -d)" \
-  && found=''; \
-  for server in \
-    ha.pool.sks-keyservers.net \
-    hkp://keyserver.ubuntu.com:80 \
-    hkp://p80.pool.sks-keyservers.net:80 \
-    pgp.mit.edu \
-  ; do \
-    echo "Fetching GPG key $GPG_KEYS from $server"; \
-    gpg --keyserver "$server" --keyserver-options timeout=10 --recv-keys "$GPG_KEYS" && found=yes && break; \
-  done; \
-  test -z "$found" && echo >&2 "error: failed to fetch GPG key $GPG_KEYS" && exit 1; \
-  gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
-  #&& rm -r "$GNUPGHOME" nginx.tar.gz.asc \
-  && mkdir -p /usr/src \
-  && tar -zxC /usr/src -f nginx.tar.gz \
-  && tar -zxC /usr/src -f ndk.tar.gz \
-  && tar -zxC /usr/src -f lua.tar.gz \
-  && cd /usr/src/nginx-$NGINX_VERSION \
-  && ./configure $CONFIG --with-debug \
-  && make -j$(getconf _NPROCESSORS_ONLN) \
-  && mv objs/nginx objs/nginx-debug \
-  && mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
-  && mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
-  && mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
-  && ./configure $CONFIG \
-  && make -j$(getconf _NPROCESSORS_ONLN) \
-  && make install \
-  && rm -rf /etc/nginx/html/ \
-  && mkdir /etc/nginx/conf.d/ \
-  && mkdir -p /usr/share/nginx/html/ \
-  && install -m644 html/index.html /usr/share/nginx/html/ \
-  && install -m644 html/50x.html /usr/share/nginx/html/ \
-  && install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
-  && install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
-  && install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
-  && install -m755 objs/ngx_http_perl_module-debug.so /usr/lib/nginx/modules/ngx_http_perl_module-debug.so \
-  && ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
-  && strip /usr/sbin/nginx* \
-  && strip /usr/lib/nginx/modules/*.so \
-  && rm -rf /usr/src/nginx-$NGINX_VERSION \
-  \
-  # Bring in gettext so we can get `envsubst`, then throw
-  # the rest away. To do this, we need to install `gettext`
-  # then move `envsubst` out of the way so `gettext` can
-  # be deleted completely, then move `envsubst` back.
-  && apk add --no-cache --virtual .gettext gettext \
-  && mv /usr/bin/envsubst /tmp/ \
-  \
-  && runDeps="$( \
-    scanelf --needed --nobanner /usr/sbin/nginx /usr/lib/nginx/modules/*.so /tmp/envsubst \
-      | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-      | sort -u \
-      | xargs -r apk info --installed \
-      | sort -u \
-  )" \
-  && apk add --no-cache --virtual .nginx-rundeps $runDeps \
-  && apk del .build-deps \
-  && apk del .gettext \
-  && mv /tmp/envsubst /usr/local/bin/ \
-  \
-  # forward request and error logs to docker log collector
-  && ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log
-
-RUN echo @testing http://mirrors.aliyun.com/alpine/edge/testing >> /etc/apk/repositories && \
-    echo /etc/apk/respositories && \
-    apk update && apk upgrade &&\
+# entrypoint.sh and dependencies
+RUN set -ex; \
+    \
+	apk update && apk upgrade &&\
     apk add --no-cache \
-    bash \
-    supervisor \
-    curl \
-    libcurl \
-    libzip-dev \
-    bzip2-dev \
-    imap-dev \
-    openssl-dev \
-    python3 \
-    python3-dev \
-    py3-pip \
-    augeas-dev \
-    libressl-dev \
-    ca-certificates \
-    dialog \
-    autoconf \
-    make \
-    gcc \
-    musl-dev \
-    linux-headers \
-    libmcrypt-dev \
-    libpng-dev \
-    libmemcached-dev \
-    icu-dev \
-    libpq \
-    libxslt-dev \
-    libffi-dev \
-    freetype-dev \
-    sqlite-dev \
-    libjpeg-turbo-dev \
-    postgresql-dev \
-    unzip \
-    rsync \
-    imagemagick \
-    ffmpeg \
-    openldap-dev \
-    tzdata && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    echo "Asia/Shanghai" > /etc/timezone && \
-    pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pip -U && \
-    docker-php-ext-configure gd \
-      --with-freetype \
-      --with-jpeg && \
-    docker-php-ext-configure ldap && \
-    docker-php-ext-install iconv pdo_mysql pdo_sqlite pgsql pdo_pgsql mysqli gd exif intl xsl json soap dom zip opcache ldap && \
-    pecl install memcached; \
-    pecl install redis; \
-    \
-    docker-php-ext-enable \
-        memcached \
-        redis \
-    ; \
-    \
-    docker-php-source delete && \
-    mkdir -p /etc/nginx && \
-    mkdir -p /run/nginx && \
-    mkdir -p /var/log/supervisor && \
-    pip3 install -U pip && \
-    pip3 install -U certbot && \
-    mkdir -p /etc/letsencrypt/webrootauth && \
-    apk del gcc musl-dev linux-headers libffi-dev augeas-dev python3-dev make autoconf tzdata
-#    apk del .sys-deps
-#    ln -s /usr/bin/php7 /usr/bin/php
+        rsync \
+		supervisor \
+		imagemagick \
+		ffmpeg \
+		tzdata \
+		nginx \
+		# forward request and error logs to docker log collector
+		  && ln -sf /dev/stdout /var/log/nginx/access.log \
+		  && ln -sf /dev/stderr /var/log/nginx/error.log \
+		  && mkdir -p /run/nginx \
+		  && mkdir -p /var/log/supervisor && \
+		cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+		echo "Asia/Shanghai" > /etc/timezone
 
 ADD conf/supervisord.conf /etc/supervisord.conf
 
 # Copy our nginx config
 RUN rm -Rf /etc/nginx/nginx.conf
 ADD conf/nginx.conf /etc/nginx/nginx.conf
-
-# download kodbox.zip
-RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps \
-        bzip2 \
-    ; \
-    \
-    curl -fsSL -o kodbox.zip \
-        "http://192.168.1.196:81/101/src.zip"; \
-    export GNUPGHOME="$(mktemp -d)"; \
-	mkdir /usr/src/kodbox; \
-    unzip -d /usr/src/kodbox kodbox.zip; \
-#    sed -i "s/'chunkSize'			=> 0.5,/'chunkSize'			=> 5,/g" /usr/src/kodbox/config/setting.php; \
-    apk del .fetch-deps
 
 # nginx site conf
 RUN mkdir -p /etc/nginx/sites-available/; \
@@ -246,8 +44,66 @@ ADD conf/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
 ADD conf/private-ssl.conf /etc/nginx/sites-available/private-ssl.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 ADD conf/setting_user.example /usr/src/kodbox/config/setting_user.example
+  
+# install the PHP extensions we need
+RUN set -ex; \
+    \
+    apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        autoconf \
+        freetype-dev \
+        icu-dev \
+        libevent-dev \
+        libjpeg-turbo-dev \
+        libmcrypt-dev \
+        libpng-dev \
+        libmemcached-dev \
+        libxml2-dev \
+        libzip-dev \
+        openldap-dev \
+        pcre-dev \
+        libwebp-dev \
+        gmp-dev \
+    ; \
+    \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+	docker-php-ext-configure intl; \
+    docker-php-ext-configure ldap; \
+    docker-php-ext-install -j "$(nproc)" \
+        bcmath \
+        exif \
+        gd \
+        intl \
+        ldap \
+        opcache \
+        pcntl \
+        pdo_mysql \
+		mysqli \
+        zip \
+        gmp \
+    ; \
+    \
+# pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install memcached; \
+    pecl install redis; \
+    \
+    docker-php-ext-enable \
+        memcached \
+        redis \
+    ; \
+    \
+    runDeps="$( \
+        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
+            | tr ',' '\n' \
+            | sort -u \
+            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+    )"; \
+    apk add --virtual .kodbox-phpext-rundeps $runDeps; \
+    apk del .build-deps
 
 # tweak php-fpm config
+ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
+ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 RUN echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
     echo "upload_max_filesize = 512M"  >> ${php_vars} &&\
     echo "post_max_size = 512M"  >> ${php_vars} &&\
@@ -271,16 +127,24 @@ RUN echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
         -e "s/^;clear_env = no$/clear_env = no/" \
         ${fpm_conf}
 
-ADD scripts/letsencrypt-setup /usr/bin/letsencrypt-setup
-ADD scripts/letsencrypt-renew /usr/bin/letsencrypt-renew
-RUN chmod 755 /usr/bin/letsencrypt-setup && chmod 755 /usr/bin/letsencrypt-renew
-
-EXPOSE 443 80
-
 VOLUME /var/www/html
+
+RUN set -ex; \
+    apk add --no-cache --virtual .fetch-deps \
+        bzip2 \
+        gnupg \
+    ; \
+    \
+    curl -fsSL -o kodbox.tar.bz2 \
+		"http://static.box.kodcloud.com/server/releases/kodbox-${KODBOX_VERSION}.tar.gz"; \ 
+    export GNUPGHOME="$(mktemp -d)"; \
+    tar -xvf kodbox.tar.bz2 -C /usr/src/; \
+    gpgconf --kill all; \
+    rm kodbox.tar.bz2; \
+    rm -rf "$GNUPGHOME"; \
+    apk del .fetch-deps
 
 COPY entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-n","-c","/etc/supervisord.conf"]
-

@@ -1,6 +1,5 @@
 -- dump by kodbox 
 SET NAMES utf8;
-use kod_box;
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
@@ -144,10 +143,10 @@ CREATE TABLE `io_source` (
   `createUser` bigint(20) unsigned NOT NULL COMMENT '创建者id',
   `modifyUser` bigint(20) unsigned NOT NULL COMMENT '最后修改者',
   `isFolder` tinyint(4) unsigned NOT NULL COMMENT '是否为文件夹(0否,1是)',
-  `name` varchar(255) NOT NULL COMMENT '文件名',
+  `name` varchar(256) NOT NULL COMMENT '文件名',
   `fileType` varchar(10) NOT NULL COMMENT '文件扩展名，文件夹则为空',
   `parentID` bigint(20) unsigned NOT NULL COMMENT '父级资源id，为0则为部门或用户根文件夹，添加用户部门时自动新建',
-  `parentLevel` varchar(1000) NOT NULL COMMENT '父路径id; 例如:  ,2,5,10,',
+  `parentLevel` varchar(2000) NOT NULL COMMENT '父路径id; 例如:  ,2,5,10,',
   `fileID` bigint(20) unsigned NOT NULL COMMENT '对应存储资源id,文件夹则该处为0',
   `isDelete` tinyint(4) unsigned NOT NULL COMMENT '是否删除(0-正常 1-已删除)',
   `size` bigint(20) unsigned NOT NULL COMMENT '占用空间大小',
