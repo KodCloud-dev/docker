@@ -134,16 +134,15 @@ VOLUME /var/www/html
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
-        bzip2 \
         gnupg \
     ; \
     \
-    curl -fsSL -o kodbox.tar.bz2 \
+    curl -fsSL -o kodbox.tar.gz2 \
 		"http://static.box.kodcloud.com/server/releases/kodbox-${KODBOX_VERSION}.tar.gz"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
-    tar -xvf kodbox.tar.bz2 -C /usr/src/; \
+    tar -xvf kodbox.tar.gz2 -C /usr/src/; \
     gpgconf --kill all; \
-    rm kodbox.tar.bz2; \
+    rm kodbox.tar.gz2; \
     rm -rf "$GNUPGHOME"; \
     apk del .fetch-deps
 

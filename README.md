@@ -19,6 +19,7 @@ docker run -d -p 80:80 -v /data:/var/www/html kodcloud/kodbox
 ```
 git clone https://github.com/KodCloud-dev/docker.git kodbox
 cd ./kodbox/compose/
+修改docker-compose.yaml，设置数据库root密码（MYSQL_ROOT_PASSWORD=密码）
 docker-compose up -d
 ```
 - 把环境变量都写在TXT文件中
@@ -36,7 +37,7 @@ services:
       - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ=Asia/Shanghai"
-      - "MYSQL_ALLOW_EMPTY_PASSWORD=yes"
+      - "MYSQL_ROOT_PASSWORD="
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
