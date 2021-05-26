@@ -1,7 +1,7 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:7.4-fpm-alpine3.13
 
-ENV KODBOX_VERSION 1.19
+ENV KODBOX_VERSION 1.20
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
