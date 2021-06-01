@@ -1,5 +1,4 @@
 -- dump by kodbox 
-use kod_box;
 SET NAMES utf8;
 
 DROP TABLE IF EXISTS `comment`;
