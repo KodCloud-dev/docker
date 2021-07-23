@@ -23,14 +23,13 @@ cd ./kodbox/compose/
 docker-compose up -d
 ```
 - 把环境变量都写在TXT文件中
-- 如果修改数据库名称(MYSQL_DATABASE)，需要同时修改./mysql-init-files/kodbox.sql 首行“use 数据库名称”
 
 ```
 version: "3.5"
 
 services:
   db:
-    image: mariadb:10.5.5
+    image: mariadb:10.6
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
@@ -48,7 +47,7 @@ services:
       - mysql_user
 
   app:
-    image: kodcloud/kodbox
+    image: kodcloud/kodbox:1.21
     ports:
       - 80:80
     links:
@@ -69,7 +68,7 @@ services:
       - mysql_user
 
   redis:
-    image: redis:alpine3.12
+    image: redis:alpine3.14
     environment:
       - "TZ=Asia/Shanghai"
     restart: always

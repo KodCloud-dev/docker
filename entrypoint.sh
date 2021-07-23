@@ -77,7 +77,6 @@ if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PAS
         fi
 fi
 
-# if [ ! -f "/var/www/html/config/data/install.lock" ] && [ ! -f "/var/www/html/config/config/setting_user.php" ] 
 if  directory_empty "/var/www/html"; then
         if [ "$(id -u)" = 0 ]; then
             rsync_options="-rlDog --chown nginx:root"

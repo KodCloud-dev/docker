@@ -1,7 +1,7 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.4-fpm-alpine3.13
+FROM php:7.4-fpm-alpine3.14
 
-ENV KODBOX_VERSION 1.20
+ENV KODBOX_VERSION 1.21
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -137,12 +137,12 @@ RUN set -ex; \
         gnupg \
     ; \
     \
-    curl -fsSL -o kodbox.tar.gz2 \
+    curl -fsSL -o kodbox.tar.gz \
 		"http://static.box.kodcloud.com/server/releases/kodbox-${KODBOX_VERSION}.tar.gz"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
-    tar -xvf kodbox.tar.gz2 -C /usr/src/; \
+    tar -xvf kodbox.tar.gz -C /usr/src/; \
     gpgconf --kill all; \
-    rm kodbox.tar.gz2; \
+    rm kodbox.tar.gz; \
     rm -rf "$GNUPGHOME"; \
     apk del .fetch-deps
 
