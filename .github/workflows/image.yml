@@ -6,6 +6,7 @@ on:
   push:
     branches: master
     tags:
+      - v1.21
 
 jobs:
   buildx:
