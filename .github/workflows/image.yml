@@ -1,6 +1,8 @@
 name: buildx
 
 on:
+  schedule:
+    - cron: '0 10 * * *' # everyday at 10am
   pull_request:
     branches: master
   push:
@@ -21,13 +23,13 @@ jobs:
         run: |
           DOCKER_IMAGE=kodcloud/kodbox
           DOCKER_PLATFORMS=linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/386,linux/ppc64le
-          VERSION=1.21
+          VERSION=edge
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/v}
           fi
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            VERSION=nightly
+            VERSION=latest
           fi
 
           TAGS="--tag ${DOCKER_IMAGE}:${VERSION}"
