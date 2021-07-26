@@ -138,7 +138,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o kodbox.tar.gz \
-		"http://static.box.kodcloud.com/server/releases/kodbox-${KODBOX_VERSION}.tar.gz"; \ 
+		"http://kodcdn.kodcloud.com/server/releases/kodbox-${KODBOX_VERSION}.tar.gz"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
     tar -xvf kodbox.tar.gz -C /usr/src/; \
     gpgconf --kill all; \
