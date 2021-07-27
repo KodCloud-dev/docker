@@ -61,7 +61,6 @@ RUN set -ex; \
         libmemcached-dev \
         libxml2-dev \
         libzip-dev \
-        openldap-dev \
         pcre-dev \
         libwebp-dev \
         gmp-dev \
@@ -75,7 +74,6 @@ RUN set -ex; \
         exif \
         gd \
         intl \
-        ldap \
         opcache \
         pcntl \
         pdo_mysql \
