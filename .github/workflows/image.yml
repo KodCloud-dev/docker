@@ -51,6 +51,6 @@ jobs:
             linux/arm/v6
             linux/386
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:v1.22
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:v1.22
           labels: ${{ steps.meta.outputs.labels }}
