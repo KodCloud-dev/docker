@@ -15,6 +15,7 @@ RUN set -ex; \
 	imagemagick \
 	ffmpeg \
 	tzdata \
+	unzip \
 	nginx \
 	# forward request and error logs to docker log collector
 	  && ln -sf /dev/stdout /var/log/nginx/access.log \
@@ -136,12 +137,12 @@ RUN set -ex; \
         gnupg \
     ; \
     \
-    curl -fsSL -o kodbox.tar.gz \
-		"https://flyaws.s3.ap-east-1.amazonaws.com/server/releases/kodbox.${KODBOX_VERSION}.tar.gz"; \ 
+    curl -fsSL -o kodbox.zip \
+		"https://flyaws.s3.ap-east-1.amazonaws.com/server/releases/kodbox.${KODBOX_VERSION}.zip"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
-    tar -xvf kodbox.tar.gz -C /usr/src/; \
+    unzip kodbox.zip -d /usr/src/kodbox/; \
     gpgconf --kill all; \
-    rm kodbox.tar.gz; \
+    rm kodbox.zip; \
     rm -rf "$GNUPGHOME"; \
     apk del .fetch-deps
 
