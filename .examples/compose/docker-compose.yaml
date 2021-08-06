@@ -2,14 +2,13 @@ version: '3.5'
 
 services:
   db:
-    image: registry.cn-hangzhou.aliyuncs.com/kodcloud/mariadb:10.5.9
+    image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
-      - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ"
-      - "MYSQL_ALLOW_EMPTY_PASSWORD=yes"
+      - "MYSQL_ROOT_PASSWORD="
       - "MYSQL_DATABASE"
       - "MYSQL_USER"
       - "MYSQL_PASSWORD"
@@ -24,16 +23,10 @@ services:
       - redis
     volumes:
       - "./kodbox:/var/www/html"
-    environment:
-      - "MYSQL_SERVER"
-      - "MYSQL_DATABASE"
-      - "MYSQL_USER"
-      - "MYSQL_PASSWORD"
-      - "SESSION_HOST"
     restart: always
 
   redis:
-    image: registry.cn-hangzhou.aliyuncs.com/kodcloud/redis:alpine3.13
+    image: redis:alpine
     environment:
       - "TZ"
     restart: always

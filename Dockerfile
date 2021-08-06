@@ -1,7 +1,6 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
 FROM php:7.4-fpm-alpine3.14
 
-# ENV KODBOX_VERSION 1.21
+ENV KODBOX_VERSION 1.22
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 # RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -61,6 +60,7 @@ RUN set -ex; \
         libmemcached-dev \
         libxml2-dev \
         libzip-dev \
+        openldap-dev \
         pcre-dev \
         libwebp-dev \
         gmp-dev \
@@ -68,11 +68,13 @@ RUN set -ex; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure intl; \
+    docker-php-ext-configure ldap; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
         exif \
         gd \
         intl \
+        ldap \
         opcache \
         pcntl \
         pdo_mysql \
@@ -135,7 +137,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o kodbox.tar.gz \
-		"https://flyaws.s3.ap-east-1.amazonaws.com/server/releases/kodbox.latest.tar.gz"; \ 
+		"https://flyaws.s3.ap-east-1.amazonaws.com/server/releases/kodbox.${KODBOX_VERSION}.tar.gz"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
     tar -xvf kodbox.tar.gz -C /usr/src/; \
     gpgconf --kill all; \
