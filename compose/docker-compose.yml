@@ -40,7 +40,7 @@ services:
       - mysql_password
       - mysql_user
 
-  redis:a
+  redis:
     image: redis:alpine3.14
     environment:
       - "TZ=Asia/Shanghai"
