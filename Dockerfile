@@ -138,7 +138,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o kodbox.zip \
-		"https://flyaws.s3.ap-east-1.amazonaws.com/server/releases/kodbox.${KODBOX_VERSION}.zip"; \ 
+		"https://static.kodcloud.com/update/download/kodbox.${KODBOX_VERSION}.zip"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
     unzip kodbox.zip -d /usr/src/kodbox/; \
     gpgconf --kill all; \
