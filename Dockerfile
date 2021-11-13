@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine3.14
 
-ENV KODBOX_VERSION 1.22
+ENV KODBOX_VERSION 1.24
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 # RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
