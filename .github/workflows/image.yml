@@ -52,5 +52,5 @@ jobs:
             linux/386
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:v1.22
+            ${{ env.IMAGE_NAME }}:v1.24
           labels: ${{ steps.meta.outputs.labels }}
