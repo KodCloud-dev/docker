@@ -4,7 +4,6 @@ $config['database'] = array (
   'DB_HOST' => 'MYSQL_SERVER',
   'DB_PORT' => 'MYSQL_PORT',
   'DB_USER' => 'MYSQL_USER',
-  'DB_PWD' => 'MYSQL_PASSWORD',
   'DB_NAME' => 'MYSQL_DATABASE',
   'DB_SQL_LOG' => true,
   'DB_FIELDS_CACHE' => true,

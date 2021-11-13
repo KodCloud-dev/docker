@@ -61,7 +61,7 @@ if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PAS
         sed -i "s/MYSQL_SERVER/${MYSQL_SERVER}/g" /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_DATABASE/${MYSQL_DATABASE}/g" /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_USER/${MYSQL_USER}/g" /usr/src/kodbox/config/setting_user.php
-        sed -i "s/MYSQL_PASSWORD/${MYSQL_PASSWORD}/g" /usr/src/kodbox/config/setting_user.php
+        sed -i "N;6 a 'DB_PWD' => '${MYSQL_PASSWORD}'," /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_PORT/${MYSQL_PORT}/g" /usr/src/kodbox/config/setting_user.php
         touch /usr/src/kodbox/data/system/fastinstall.lock
         if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
