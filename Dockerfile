@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine3.14
 
-ENV KODBOX_VERSION 1.24
+ENV KODBOX_VERSION 1.25
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 # RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -65,6 +65,11 @@ RUN set -ex; \
         pcre-dev \
         libwebp-dev \
         gmp-dev \
+        bzip2-dev \
+        gettext-dev \
+        libressl-dev \
+        curl-dev \
+        imagemagick-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
@@ -82,17 +87,24 @@ RUN set -ex; \
 	mysqli \
         zip \
         gmp \
+        bz2 \
+        gettext \
+        sockets \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install memcached; \
     pecl install redis; \
     pecl install mcrypt; \
+    pecl install imagick; \
+    pecl install swoole; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
         mcrypt \
+        imagick \
+        swoole \
     ; \
     \
     runDeps="$( \
