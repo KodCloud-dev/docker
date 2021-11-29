@@ -1,3 +1,4 @@
+[![buildx](https://github.com/KodCloud-dev/docker/actions/workflows/image.yml/badge.svg)](https://github.com/KodCloud-dev/docker/actions/workflows/image.yml)
 # 1.快速启动
 ```
 docker run -d -p 80:80 kodcloud/kodbox
