@@ -93,10 +93,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached; \
-    pecl install redis; \
+    pecl install memcached-3.1.5; \
+    pecl install redis-5.3.4; \
     pecl install mcrypt; \
-    pecl install imagick; \
+    pecl install imagick-3.5.1; \
     pecl install swoole; \
     \
     docker-php-ext-enable \
