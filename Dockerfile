@@ -97,14 +97,12 @@ RUN set -ex; \
     pecl install redis-5.3.4; \
     pecl install mcrypt; \
     pecl install imagick-3.5.1; \
-    pecl install swoole; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
         mcrypt \
         imagick \
-        swoole \
     ; \
     \
     runDeps="$( \
