@@ -104,6 +104,7 @@ RUN set -ex; \
         imagick \
 		swoole \
     ; \
+    rm -r /tmp/pear; \    
     \
     runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
