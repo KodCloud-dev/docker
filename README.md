@@ -30,7 +30,7 @@ version: "3.5"
 
 services:
   db:
-    image: mariadb:10.6
+    image: mariadb:10.7
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
@@ -48,7 +48,7 @@ services:
       - mysql_user
 
   app:
-    image: kodcloud/kodbox:v1.24
+    image: kodcloud/kodbox:v1.26
     ports:
       - 80:80
     links:
@@ -69,7 +69,7 @@ services:
       - mysql_user
 
   redis:
-    image: redis:alpine3.14
+    image: redis:alpine3.15
     environment:
       - "TZ=Asia/Shanghai"
     restart: always

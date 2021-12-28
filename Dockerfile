@@ -1,9 +1,7 @@
-FROM php:7.4-fpm-alpine3.14
+FROM php:8.0-fpm-alpine3.15
 
-ENV KODBOX_VERSION 1.25
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
-# RUN apk add --no-cache --repository http://mirrors.aliyun.com/alpine/edge/community gnu-libiconv
-# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+ENV KODBOX_VERSION 1.26
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # entrypoint.sh and dependencies
 RUN set -ex; \
@@ -93,16 +91,18 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached-3.1.5; \
-    pecl install redis-5.3.4; \
+    pecl install memcached; \
+    pecl install redis; \
     pecl install mcrypt; \
-    pecl install imagick-3.5.1; \
+    pecl install imagick; \
+	pecl install swoole; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
         mcrypt \
         imagick \
+		swoole \
     ; \
     \
     runDeps="$( \
@@ -120,7 +120,6 @@ ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 RUN echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
     echo "upload_max_filesize = 512M"  >> ${php_vars} &&\
     echo "post_max_size = 512M"  >> ${php_vars} &&\
-    echo "variables_order = \"EGPCS\""  >> ${php_vars} && \
     echo "memory_limit = 512M"  >> ${php_vars} && \
     echo "max_execution_time = 3600"  >> ${php_vars} && \
     echo "max_input_time = 3600"  >> ${php_vars} && \
