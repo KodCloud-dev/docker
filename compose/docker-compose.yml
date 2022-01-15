@@ -20,9 +20,9 @@ services:
       - mysql_user
 
   app:
-    image: box:1.26
+    image: kodcloud/kodbox:v1.26
     ports:
-      - 8000:80
+      - 80:80
     links:
       - db
       - redis
