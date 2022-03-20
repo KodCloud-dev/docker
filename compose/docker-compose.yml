@@ -9,7 +9,7 @@ services:
       - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ=Asia/Shanghai"
-      - "MYSQL_ROOT_PASSWORD="
+      - "MYSQL_ROOT_PASSWORD="    #root password required
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"

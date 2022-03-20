@@ -30,14 +30,14 @@ version: "3.5"
 
 services:
   db:
-    image: mariadb:10.7
+    image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
       - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ=Asia/Shanghai"
-      - "MYSQL_ROOT_PASSWORD="
+      - "MYSQL_ROOT_PASSWORD="    #root password required
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
@@ -71,7 +71,7 @@ services:
       - mysql_user
 
   redis:
-    image: redis:alpine3.15
+    image: redis:alpine
     environment:
       - "TZ=Asia/Shanghai"
     restart: always
