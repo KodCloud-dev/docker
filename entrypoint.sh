@@ -38,26 +38,26 @@ file_env MYSQL_DATABASE
 file_env MYSQL_USER
 file_env MYSQL_PASSWORD
 file_env MYSQL_PORT
-file_env SESSION_TYPE
-file_env SESSION_HOST
-file_env SESSION_PORT
+file_env CACHE_TYPE
+file_env CACHE_HOST
+file_env CACHE_PORT
 file_env KODBOX_ADMIN_USER
 file_env KODBOX_ADMIN_PASSWORD
 
 MYSQL_PORT=${MYSQL_PORT:-3306}
-SESSION_TYPE=${SESSION_TYPE:-redis}
-SESSION_PORT=${SESSION_PORT:-6379}
+CACHE_TYPE=${CACHE_TYPE:-redis}
+CACHE_PORT=${CACHE_PORT:-6379}
 
 waiting_for_db(){
   waiting_for_connection $MYSQL_SERVER $MYSQL_PORT
 }
 
-waiting_for_session(){
-  waiting_for_connection $SESSION_HOST $SESSION_PORT
+waiting_for_cache(){
+  waiting_for_connection $CACHE_HOST $CACHE_PORT
 }
 
 if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ ! -f "/usr/src/kodbox/config/setting_user.php" ]; then
-        cp /usr/src/kodbox/config/setting_user.example /usr/src/kodbox/config/setting_user.php
+        mv /usr/src/kodbox/config/setting_user.example /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_SERVER/${MYSQL_SERVER}/g" /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_DATABASE/${MYSQL_DATABASE}/g" /usr/src/kodbox/config/setting_user.php
         sed -i "s/MYSQL_USER/${MYSQL_USER}/g" /usr/src/kodbox/config/setting_user.php
@@ -67,14 +67,24 @@ if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PAS
         if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
             echo -e "ADM_NAME=${KODBOX_ADMIN_USER}\nADM_PWD=${KODBOX_ADMIN_PASSWORD}" >> /usr/src/kodbox/data/system/fastinstall.lock
         fi
-        if [ -n "${SESSION_HOST+x}" ]; then
-            sed -i "s/SESSION_TYPE/${SESSION_TYPE}/g" /usr/src/kodbox/config/setting_user.php
-            sed -i "s/SESSION_HOST/${SESSION_HOST}/g" /usr/src/kodbox/config/setting_user.php
-            sed -i "s/SESSION_PORT/${SESSION_PORT}/g" /usr/src/kodbox/config/setting_user.php
+        if [ -n "${CACHE_HOST+x}" ]; then
+            sed -i "s/CACHE_TYPE/${CACHE_TYPE}/g" /usr/src/kodbox/config/setting_user.php
+            sed -i "s/CACHE_HOST/${CACHE_HOST}/g" /usr/src/kodbox/config/setting_user.php
+            sed -i "s/CACHE_PORT/${CACHE_PORT}/g" /usr/src/kodbox/config/setting_user.php
         else
-            sed -i "s/SESSION_TYPE/file/g" /usr/src/kodbox/config/setting_user.php
-            sed -i "s/SESSION_HOST/file/g" /usr/src/kodbox/config/setting_user.php
+            sed -i "s/CACHE_TYPE/file/g" /usr/src/kodbox/config/setting_user.php
+            sed -i "s/CACHE_HOST/file/g" /usr/src/kodbox/config/setting_user.php
         fi
+fi
+
+if [ ! -z "$PUID" ]; then
+  if [ -z "$PGID" ]; then
+    PGID=${PUID}
+  fi
+  deluser nginx
+  addgroup -g ${PGID} nginx
+  adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
+  chown -R nginx:nginx /var/lib/nginx/
 fi
 
 if  directory_empty "/var/www/html"; then
@@ -86,6 +96,7 @@ if  directory_empty "/var/www/html"; then
         echo "KODBOX is installing ..."
         rsync $rsync_options --delete /usr/src/kodbox/ /var/www/html/
         if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
+            waiting_for_cache
             waiting_for_db
             php /var/www/html/index.php "install/index/auto"
             chown -R nginx:root /var/www
