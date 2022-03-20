@@ -62,6 +62,8 @@ services:
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
       - "SESSION_HOST=redis"
+      - "PUID=1050"
+      - "PGID=1051"
     restart: always
     secrets:
       - mysql_db
@@ -105,3 +107,8 @@ kodbox容器支持通过环境变量自动配置。您可以在首次运行时�
 -	`SESSION_TYPE` 缓存类型，默认redis，仅当配置`SESSION_HOST`时生效.
 -	`SESSION_HOST` 缓存地址.
 -	`SESSION_PORT` 缓存端口，默认6379，仅当配置`SESSION_HOST`时生效.
+
+**uid/gid**:
+
+- `PUID`代表站点运行用户nginx的用户uid
+- `PGID`代表站点运行用户nginx的用户组gid
