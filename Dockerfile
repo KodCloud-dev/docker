@@ -1,25 +1,23 @@
 FROM php:8.0-fpm-alpine3.15
 
-ENV KODBOX_VERSION 1.26
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
 RUN set -ex; \
     \
     apk update && apk upgrade &&\
     apk add --no-cache \
         rsync \
-	supervisor \
-	imagemagick \
-	ffmpeg \
-	tzdata \
-	unzip \
-	nginx \
-	# forward request and error logs to docker log collector
-	  && ln -sf /dev/stdout /var/log/nginx/access.log \
-	  && ln -sf /dev/stderr /var/log/nginx/error.log \
-	  && mkdir -p /run/nginx \
-	  && mkdir -p /var/log/supervisor && \
+        supervisor \
+        imagemagick \
+        ffmpeg \
+        tzdata \
+        unzip \
+        nginx \
+        # forward request and error logs to docker log collector
+        && ln -sf /dev/stdout /var/log/nginx/access.log \
+        && ln -sf /dev/stderr /var/log/nginx/error.log \
+        && mkdir -p /run/nginx \
+        && mkdir -p /var/log/supervisor && \
 	cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 	echo "Asia/Shanghai" > /etc/timezone
 
@@ -39,7 +37,6 @@ RUN mkdir -p /etc/nginx/sites-available/; \
     chmod -R g=u /var/www
 
 ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
-ADD conf/nginx-site-ssl.conf /etc/nginx/sites-available/default-ssl.conf
 ADD conf/private-ssl.conf /etc/nginx/sites-available/private-ssl.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 ADD conf/setting_user.example /usr/src/kodbox/config/setting_user.example
@@ -82,7 +79,7 @@ RUN set -ex; \
         opcache \
         pcntl \
         pdo_mysql \
-	mysqli \
+	    mysqli \
         zip \
         gmp \
         bz2 \
@@ -95,12 +92,14 @@ RUN set -ex; \
     pecl install redis; \
     pecl install mcrypt; \
     pecl install imagick; \
+    pecl install swoole; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
         mcrypt \
         imagick \
+        swoole \
     ; \
     rm -r /tmp/pear; \    
     \
@@ -146,7 +145,7 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o kodbox.zip \
-		"https://static.kodcloud.com/update/download/kodbox.${KODBOX_VERSION}.zip"; \ 
+		"https://api.kodcloud.com/?app/version&download=server.link"; \ 
     export GNUPGHOME="$(mktemp -d)"; \
     unzip kodbox.zip -d /usr/src/kodbox/; \
     gpgconf --kill all; \

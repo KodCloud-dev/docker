@@ -1,8 +1,8 @@
 name: buildx
 
 on:
-#  schedule:
-#    - cron: '0 0 * * *' # everyday at 0+8am
+  schedule:
+    - cron: '0 0 * * *' # everyday at 0+8am
   push:
     branches: master
     tags:
@@ -52,5 +52,4 @@ jobs:
             linux/386
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:v1.26
           labels: ${{ steps.meta.outputs.labels }}

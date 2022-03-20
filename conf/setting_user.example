@@ -9,7 +9,7 @@ $config['database'] = array (
   'DB_FIELDS_CACHE' => true,
   'DB_SQL_BUILD_CACHE' => false,
 );
-$config['cache']['sessionType'] = 'SESSION_TYPE';
-$config['cache']['cacheType'] = 'SESSION_TYPE';
-$config['cache']['SESSION_TYPE']['host'] = 'SESSION_HOST';
-$config['cache']['SESSION_TYPE']['port'] = 'SESSION_PORT';
+$config['cache']['sessionType'] = 'CACHE_TYPE';
+$config['cache']['cacheType'] = 'CACHE_TYPE';
+$config['cache']['CACHE_TYPE']['host'] = 'CACHE_HOST';
+$config['cache']['CACHE_TYPE']['port'] = 'CACHE_PORT';

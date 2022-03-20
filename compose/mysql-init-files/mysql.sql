@@ -23,7 +23,7 @@ CREATE TABLE `comment` (
   KEY `commentCount` (`commentCount`),
   KEY `modifyTime` (`modifyTime`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='通用评论表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='通用评论表';
 
 DROP TABLE IF EXISTS `comment_meta`;
 CREATE TABLE `comment_meta` (
@@ -37,7 +37,7 @@ CREATE TABLE `comment_meta` (
   UNIQUE KEY `commentID_key` (`commentID`,`key`),
   KEY `commentID` (`commentID`),
   KEY `key` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论表扩展字段';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表扩展字段';
 
 DROP TABLE IF EXISTS `comment_praise`;
 CREATE TABLE `comment_praise` (
@@ -52,7 +52,7 @@ CREATE TABLE `comment_praise` (
   KEY `userID` (`userID`),
   KEY `modifyTime` (`modifyTime`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='评论点赞表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论点赞表';
 
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
@@ -73,7 +73,7 @@ CREATE TABLE `group` (
   KEY `modifyTime` (`modifyTime`),
   KEY `order` (`sort`),
   KEY `parentLevel` (`parentLevel`(333))
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='群组表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='群组表';
 
 DROP TABLE IF EXISTS `group_meta`;
 CREATE TABLE `group_meta` (
@@ -87,7 +87,7 @@ CREATE TABLE `group_meta` (
   UNIQUE KEY `groupID_key` (`groupID`,`key`),
   KEY `groupID` (`groupID`),
   KEY `key` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户数据扩展表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户数据扩展表';
 
 DROP TABLE IF EXISTS `io_file`;
 CREATE TABLE `io_file` (
@@ -109,7 +109,7 @@ CREATE TABLE `io_file` (
   KEY `createTime` (`createTime`),
   KEY `ioType` (`ioType`),
   KEY `hashMd5` (`hashMd5`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档存储表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档存储表';
 
 DROP TABLE IF EXISTS `io_file_contents`;
 CREATE TABLE `io_file_contents` (
@@ -118,7 +118,7 @@ CREATE TABLE `io_file_contents` (
   `createTime` int(11) unsigned NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`fileID`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文件id';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件id';
 
 DROP TABLE IF EXISTS `io_file_meta`;
 CREATE TABLE `io_file_meta` (
@@ -132,7 +132,7 @@ CREATE TABLE `io_file_meta` (
   UNIQUE KEY `fileID_key` (`fileID`,`key`),
   KEY `fileID` (`fileID`),
   KEY `key` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文件扩展表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件扩展表';
 
 DROP TABLE IF EXISTS `io_source`;
 CREATE TABLE `io_source` (
@@ -168,7 +168,7 @@ CREATE TABLE `io_source` (
   KEY `createTime` (`createTime`),
   KEY `viewTime` (`viewTime`),
   KEY `modifyUser` (`modifyUser`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档数据表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档数据表';
 
 DROP TABLE IF EXISTS `io_source_auth`;
 CREATE TABLE `io_source_auth` (
@@ -186,7 +186,7 @@ CREATE TABLE `io_source_auth` (
   KEY `groupID` (`targetID`),
   KEY `auth` (`authID`),
   KEY `authDefine` (`authDefine`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档权限表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档权限表';
 
 DROP TABLE IF EXISTS `io_source_event`;
 CREATE TABLE `io_source_event` (
@@ -203,7 +203,7 @@ CREATE TABLE `io_source_event` (
   KEY `userID` (`userID`),
   KEY `eventType` (`type`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档事件表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档事件表';
 
 DROP TABLE IF EXISTS `io_source_history`;
 CREATE TABLE `io_source_history` (
@@ -220,7 +220,7 @@ CREATE TABLE `io_source_history` (
   KEY `userID` (`userID`),
   KEY `fileID` (`fileID`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档历史记录表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档历史记录表';
 
 DROP TABLE IF EXISTS `io_source_meta`;
 CREATE TABLE `io_source_meta` (
@@ -234,7 +234,7 @@ CREATE TABLE `io_source_meta` (
   UNIQUE KEY `sourceID_key` (`sourceID`,`key`),
   KEY `sourceID` (`sourceID`),
   KEY `key` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档扩展表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档扩展表';
 
 DROP TABLE IF EXISTS `io_source_recycle`;
 CREATE TABLE `io_source_recycle` (
@@ -252,7 +252,7 @@ CREATE TABLE `io_source_recycle` (
   KEY `parentLevel` (`parentLevel`(333)),
   KEY `targetType` (`targetType`),
   KEY `targetID` (`targetID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文档回收站';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文档回收站';
 
 DROP TABLE IF EXISTS `share`;
 CREATE TABLE `share` (
@@ -284,7 +284,7 @@ CREATE TABLE `share` (
   KEY `numDownload` (`numDownload`),
   KEY `isShareTo` (`isShareTo`),
   KEY `url` (`url`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分享数据表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分享数据表';
 
 DROP TABLE IF EXISTS `share_report`;
 CREATE TABLE `share_report` (
@@ -307,7 +307,7 @@ CREATE TABLE `share_report` (
   KEY `type` (`type`),
   KEY `modifyTime` (`modifyTime`),
   KEY `createTime` (`createTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分享举报表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分享举报表';
 
 DROP TABLE IF EXISTS `share_to`;
 CREATE TABLE `share_to` (
@@ -325,7 +325,7 @@ CREATE TABLE `share_to` (
   KEY `targetID` (`targetID`),
   KEY `authDefine` (`authDefine`),
   KEY `authID` (`authID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='分享给指定用户(协作)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分享给指定用户(协作)';
 
 DROP TABLE IF EXISTS `system_log`;
 CREATE TABLE `system_log` (
@@ -340,7 +340,7 @@ CREATE TABLE `system_log` (
   KEY `type` (`type`),
   KEY `createTime` (`createTime`),
   KEY `sessionID` (`sessionID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统日志表';
 
 DROP TABLE IF EXISTS `system_option`;
 CREATE TABLE `system_option` (
@@ -354,7 +354,7 @@ CREATE TABLE `system_option` (
   UNIQUE KEY `key_type` (`key`,`type`),
   KEY `createTime` (`createTime`),
   KEY `modifyTime` (`modifyTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统配置表';
 
 DROP TABLE IF EXISTS `system_session`;
 CREATE TABLE `system_session` (
@@ -370,7 +370,7 @@ CREATE TABLE `system_session` (
   KEY `userID` (`userID`),
   KEY `expires` (`expires`),
   KEY `modifyTime` (`modifyTime`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='session';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='session';
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
@@ -399,7 +399,7 @@ CREATE TABLE `user` (
   KEY `nickName` (`nickName`),
   KEY `phone` (`phone`),
   KEY `sizeUse` (`sizeUse`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 DROP TABLE IF EXISTS `user_fav`;
 CREATE TABLE `user_fav` (
@@ -420,7 +420,7 @@ CREATE TABLE `user_fav` (
   KEY `tagID` (`tagID`),
   KEY `path` (`path`(333)),
   KEY `type` (`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户文档标签表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户文档标签表';
 
 DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE `user_group` (
@@ -437,7 +437,7 @@ CREATE TABLE `user_group` (
   KEY `groupID` (`groupID`),
   KEY `groupRole` (`authID`),
   KEY `sort` (`sort`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户群组关联表(一对多)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户群组关联表(一对多)';
 
 DROP TABLE IF EXISTS `user_meta`;
 CREATE TABLE `user_meta` (
@@ -451,7 +451,7 @@ CREATE TABLE `user_meta` (
   UNIQUE KEY `userID_metaKey` (`userID`,`key`),
   KEY `userID` (`userID`),
   KEY `metaKey` (`key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户数据扩展表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户数据扩展表';
 
 DROP TABLE IF EXISTS `user_option`;
 CREATE TABLE `user_option` (
@@ -467,5 +467,5 @@ CREATE TABLE `user_option` (
   KEY `userID` (`userID`),
   KEY `key` (`key`),
   KEY `type` (`type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='用户数据配置表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户数据配置表';
 
