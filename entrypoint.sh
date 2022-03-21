@@ -77,8 +77,8 @@ if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PAS
         fi
 fi
 
-if [ ! -z "$PUID" ]; then
-  if [ -z "$PGID" ]; then
+if [ -n "${PUID+x}" ]; then
+  if [ ! -n "${PGID+x}" ]; then
     PGID=${PUID}
   fi
   deluser nginx
