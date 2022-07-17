@@ -89,7 +89,7 @@ fi
 
 if  directory_empty "/var/www/html"; then
         if [ "$(id -u)" = 0 ]; then
-            rsync_options="-rlDog --chown nginx:root"
+            rsync_options="-rlDog --chown nginx:nginx"
         else
             rsync_options="-rlD"
         fi

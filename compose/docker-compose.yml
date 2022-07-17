@@ -9,18 +9,19 @@ services:
       - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ=Asia/Shanghai"
-      - "MYSQL_ROOT_PASSWORD="    #root password required
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
+      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_user_password"
+      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password"
     restart: always
     secrets:
       - mysql_db
-      - mysql_password
       - mysql_user
+      - mysql_user_password
+      - mysql_root_password
 
   app:
-    image: kodcloud/kodbox:v1.28
+    image: kodcloud/kodbox
     ports:
       - 80:80
     links:
@@ -32,13 +33,15 @@ services:
       - "MYSQL_SERVER=db"
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
+      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_user_password"
       - "CACHE_HOST=redis"
+      - "PUID=1050"
+      - "PGID=1051"
     restart: always
     secrets:
       - mysql_db
-      - mysql_password
       - mysql_user
+      - mysql_user_password
 
   redis:
     image: redis:alpine
@@ -49,7 +52,9 @@ services:
 secrets:
   mysql_db:
     file: "./mysql_db.txt"
-  mysql_password:
-    file: "./mysql_password.txt"
   mysql_user:
     file: "./mysql_user.txt"
+  mysql_user_password:
+    file: "./mysql_user_password.txt"
+  mysql_root_password:
+    file: "./mysql_root_password.txt"

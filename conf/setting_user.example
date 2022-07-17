@@ -13,3 +13,4 @@ $config['cache']['sessionType'] = 'CACHE_TYPE';
 $config['cache']['cacheType'] = 'CACHE_TYPE';
 $config['cache']['CACHE_TYPE']['host'] = 'CACHE_HOST';
 $config['cache']['CACHE_TYPE']['port'] = 'CACHE_PORT';
+$GLOBALS['config']['settings']['upload']['chunkSize'] = 1024*1024*5;
