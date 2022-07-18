@@ -1,6 +1,6 @@
 FROM php:8.0-fpm-alpine3.16
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
 RUN set -ex; \
     \
