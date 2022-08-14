@@ -35,8 +35,8 @@ services:
       - "MYSQL_USER_FILE=/run/secrets/mysql_user"
       - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_user_password"
       - "CACHE_HOST=redis"
-      - "PUID=1050"
-      - "PGID=1051"
+#      - "PUID=1050"
+#      - "PGID=1051"
     restart: always
     secrets:
       - mysql_db
