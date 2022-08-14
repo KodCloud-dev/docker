@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk update && apk upgrade &&\
     apk add --no-cache \
+        bash \
         rsync \
         supervisor \
         imagemagick \
@@ -36,9 +37,7 @@ RUN mkdir -p /etc/nginx/sites-available/; \
     chown -R nginx:root /var/www; \
     chmod -R g=u /var/www
 
-ADD conf/nginx-site.conf /etc/nginx/sites-available/default.conf
 ADD conf/private-ssl.conf /etc/nginx/sites-available/private-ssl.conf
-RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 ADD conf/setting_user.example /usr/src/kodbox/config/setting_user.example
   
 # install the PHP extensions we need
@@ -154,6 +153,8 @@ RUN set -ex; \
     apk del .fetch-deps
 
 COPY entrypoint.sh /
+
+EXPOSE 80 443
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord","-n","-c","/etc/supervisord.conf"]
