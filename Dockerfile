@@ -1,6 +1,6 @@
-FROM php:8.0-fpm-alpine3.16
+FROM php:8.1-fpm-alpine3.16
 
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
 RUN set -ex; \
     \
@@ -58,10 +58,8 @@ RUN set -ex; \
         openldap-dev \
         pcre-dev \
         libwebp-dev \
-        gmp-dev \
         bzip2-dev \
         gettext-dev \
-        libressl-dev \
         curl-dev \
         imagemagick-dev \
     ; \
@@ -80,18 +78,17 @@ RUN set -ex; \
         pdo_mysql \
 	    mysqli \
         zip \
-        gmp \
         bz2 \
         gettext \
         sockets \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached; \
-    pecl install redis; \
-    pecl install mcrypt; \
-    pecl install imagick; \
-    pecl install swoole; \
+    pecl install memcached-3.2.0; \
+    pecl install redis-5.3.7; \
+    pecl install mcrypt-1.0.5; \
+    pecl install imagick-3.7.0; \
+    pecl install swoole-5.0.1; \
     \
     docker-php-ext-enable \
         memcached \
