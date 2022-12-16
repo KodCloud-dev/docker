@@ -136,18 +136,10 @@ RUN echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
 VOLUME /var/www/html
 
 RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps \
-        gnupg \
-    ; \
-    \
     curl -fsSL -o kodbox.zip \
 		"https://api.kodcloud.com/?app/version&download=server.link"; \ 
-    export GNUPGHOME="$(mktemp -d)"; \
     unzip kodbox.zip -d /usr/src/kodbox/; \
-    gpgconf --kill all; \
-    rm kodbox.zip; \
-    rm -rf "$GNUPGHOME"; \
-    apk del .fetch-deps
+    rm kodbox.zip
 
 COPY entrypoint.sh /
 
