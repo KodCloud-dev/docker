@@ -13,6 +13,7 @@ RUN set -ex; \
         ffmpeg \
         tzdata \
         unzip \
+	p7zip \
         nginx \
 	coreutils \
         # forward request and error logs to docker log collector
