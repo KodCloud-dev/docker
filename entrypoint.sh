@@ -95,6 +95,8 @@ if  directory_empty "/var/www/html"; then
   fi
   echo "KODBOX is installing ..."
   rsync $rsync_options --delete /usr/src/kodbox/ /var/www/html/
+  if [ -f /var/www/html/app/sdks/archiveLib/bin/7z_linux ]; then
+    cp /usr/bin/7z /var/www/html/app/sdks/archiveLib/bin/7z_linux
   if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
     waiting_for_cache
     waiting_for_db
