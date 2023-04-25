@@ -56,24 +56,26 @@ waiting_for_cache(){
   waiting_for_connection $CACHE_HOST $CACHE_PORT
 }
 
-if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ ! -f "/usr/src/kodbox/config/setting_user.php" ]; then
-  mv /usr/src/kodbox/config/setting_user.example /usr/src/kodbox/config/setting_user.php
-  sed -i "s/MYSQL_SERVER/${MYSQL_SERVER}/g" /usr/src/kodbox/config/setting_user.php
-  sed -i "s/MYSQL_DATABASE/${MYSQL_DATABASE}/g" /usr/src/kodbox/config/setting_user.php
-  sed -i "s/MYSQL_USER/${MYSQL_USER}/g" /usr/src/kodbox/config/setting_user.php
-  sed -i "N;6 a 'DB_PWD' => '${MYSQL_PASSWORD}'," /usr/src/kodbox/config/setting_user.php
-  sed -i "s/MYSQL_PORT/${MYSQL_PORT}/g" /usr/src/kodbox/config/setting_user.php
+CONIG_FILE=/usr/src/kodbox/config/setting_user.php
+
+if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ ! -f "$CONIG_FILE" ]; then
+  mv /usr/src/kodbox/config/setting_user.example $CONIG_FILE
+  sed -i "s/MYSQL_SERVER/${MYSQL_SERVER}/g" $CONIG_FILE
+  sed -i "s/MYSQL_DATABASE/${MYSQL_DATABASE}/g" $CONIG_FILE
+  sed -i "s/MYSQL_USER/${MYSQL_USER}/g" $CONIG_FILE
+  sed -i "N;6 a 'DB_PWD' => '${MYSQL_PASSWORD}'," $CONIG_FILE
+  sed -i "s/MYSQL_PORT/${MYSQL_PORT}/g" $CONIG_FILE
   touch /usr/src/kodbox/data/system/fastinstall.lock
   if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
     echo -e "ADM_NAME=${KODBOX_ADMIN_USER}\nADM_PWD=${KODBOX_ADMIN_PASSWORD}" >> /usr/src/kodbox/data/system/fastinstall.lock
   fi
   if [ -n "${CACHE_HOST+x}" ]; then
-    sed -i "s/CACHE_TYPE/${CACHE_TYPE}/g" /usr/src/kodbox/config/setting_user.php
-    sed -i "s/CACHE_HOST/${CACHE_HOST}/g" /usr/src/kodbox/config/setting_user.php
-    sed -i "s/CACHE_PORT/${CACHE_PORT}/g" /usr/src/kodbox/config/setting_user.php
+    sed -i "s/CACHE_TYPE/${CACHE_TYPE}/g" $CONIG_FILE
+    sed -i "s/CACHE_HOST/${CACHE_HOST}/g" $CONIG_FILE
+    sed -i "s/CACHE_PORT/${CACHE_PORT}/g" $CONIG_FILE
   else
-    sed -i "s/CACHE_TYPE/file/g" /usr/src/kodbox/config/setting_user.php
-    sed -i "s/CACHE_HOST/file/g" /usr/src/kodbox/config/setting_user.php
+    sed -i "s/CACHE_TYPE/file/g" $CONIG_FILE
+    sed -i "s/CACHE_HOST/file/g" $CONIG_FILE
   fi
 fi
 
@@ -95,8 +97,10 @@ if  directory_empty "/var/www/html"; then
   fi
   echo "KODBOX is installing ..."
   rsync $rsync_options --delete /usr/src/kodbox/ /var/www/html/
-  if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
-    waiting_for_cache
+  if [ -f "$CONIG_FILE" ]; then
+    if [ -n "${CACHE_HOST+x}" ]; then
+      waiting_for_cache
+    fi
     waiting_for_db
     php /var/www/html/index.php "install/index/auto"
     chown -R nginx:root /var/www

@@ -42,7 +42,6 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
       - "./db:/var/lib/mysql"
-      - "./mysql-init-files:/docker-entrypoint-initdb.d"
     environment:
       - "TZ=Asia/Shanghai"
       - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
