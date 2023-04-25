@@ -15,7 +15,7 @@ RUN set -ex; \
         unzip \
         p7zip \
         nginx \
-	    coreutils \
+        coreutils \
         # forward request and error logs to docker log collector
         && ln -sf /dev/stdout /var/log/nginx/access.log \
         && ln -sf /dev/stderr /var/log/nginx/error.log \
@@ -78,7 +78,7 @@ RUN set -ex; \
         opcache \
         pcntl \
         pdo_mysql \
-	    mysqli \
+        mysqli \
         zip \
         bz2 \
         gettext \
