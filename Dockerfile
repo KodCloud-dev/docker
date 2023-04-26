@@ -141,6 +141,7 @@ RUN set -ex; \
     curl -fsSL -o kodbox.zip \
 		"https://api.kodcloud.com/?app/version&download=server.link"; \ 
     unzip kodbox.zip -d /usr/src/kodbox/; \
+    sed -i "s/MyISAM/InnoDB/g" /usr/src/kodbox/app/controller/install/data/mysql.sql; \
     rm kodbox.zip
 
 COPY entrypoint.sh /
