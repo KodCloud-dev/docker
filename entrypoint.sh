@@ -43,10 +43,19 @@ file_env CACHE_HOST
 file_env CACHE_PORT
 file_env KODBOX_ADMIN_USER
 file_env KODBOX_ADMIN_PASSWORD
+file_env FPM_MAX
+file_env FPM_START
+file_env FPM_MIN_SPARE
+file_env FPM_MAX_SPARE
 
 MYSQL_PORT=${MYSQL_PORT:-3306}
 CACHE_TYPE=${CACHE_TYPE:-redis}
 CACHE_PORT=${CACHE_PORT:-6379}
+
+FPM_MAX=${FPM_MAX:-50}
+FPM_START=${FPM_START:-10}
+FPM_MIN_SPARE=${FPM_MIN_SPARE:-10}
+FPM_MAX_SPARE=${FPM_MAX_SPARE:-30}
 
 waiting_for_db(){
   waiting_for_connection $MYSQL_SERVER $MYSQL_PORT
@@ -87,6 +96,13 @@ if [ -n "${PUID+x}" ]; then
   addgroup -g ${PGID} nginx
   adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u ${PUID} nginx
   chown -R nginx:nginx /var/lib/nginx/
+fi
+
+if [ -n "${FPM_MAX+x}" ]; then
+  sed -i "s/pm.max_children = .*/pm.max_children = ${FPM_MAX}/g" /usr/local/etc/php-fpm.d/www.conf
+  sed -i "s/pm.start_servers = .*/pm.start_servers = ${FPM_START}/g" /usr/local/etc/php-fpm.d/www.conf
+  sed -i "s/pm.min_spare_servers = .*/pm.min_spare_servers = ${FPM_MIN_SPARE}/g" /usr/local/etc/php-fpm.d/www.conf
+  sed -i "s/pm.max_spare_servers = .*/pm.max_spare_servers = ${FPM_MAX_SPARE}/g" /usr/local/etc/php-fpm.d/www.conf
 fi
 
 if  directory_empty "/var/www/html"; then
