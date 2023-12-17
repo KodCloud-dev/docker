@@ -36,6 +36,11 @@ RUN mkdir -p /etc/nginx/sites-available/; \
     mkdir -p /etc/nginx/ssl/; \
     rm -Rf /var/www/*; \
     mkdir /var/www/html/; \
+    mkdir -p /docker-entrypoint-hooks.d/pre-installation \
+             /docker-entrypoint-hooks.d/post-installation \
+             /docker-entrypoint-hooks.d/pre-upgrade \
+             /docker-entrypoint-hooks.d/post-upgrade \
+             /docker-entrypoint-hooks.d/before-starting; \
     chown -R nginx:root /var/www; \
     chmod -R g=u /var/www
 
@@ -87,10 +92,10 @@ RUN set -ex; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install memcached-3.2.0; \
-    pecl install redis-5.3.7; \
+    pecl install redis-6.0.2; \
     # pecl install mcrypt-1.0.5; \
     pecl install imagick-3.7.0; \
-    pecl install swoole-5.0.1; \
+    pecl install swoole-5.1.1; \
     \
     docker-php-ext-enable \
         memcached \
@@ -107,13 +112,24 @@ RUN set -ex; \
             | sort -u \
             | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
     )"; \
-    apk add --virtual .kodbox-phpext-rundeps $runDeps; \
-    apk del .build-deps
+    apk add --no-network --virtual .kodbox-phpext-rundeps $runDeps; \
+    apk del --no-network .build-deps
 
 # tweak php-fpm config
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
-RUN echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
+RUN { \
+        echo 'opcache.enable=1'; \
+        echo 'opcache.interned_strings_buffer=32'; \
+        echo 'opcache.max_accelerated_files=10000'; \
+        echo 'opcache.memory_consumption=128'; \
+        echo 'opcache.save_comments=1'; \
+        echo 'opcache.revalidate_freq=60'; \
+        echo 'opcache.jit=1255'; \
+        echo 'opcache.jit_buffer_size=128M'; \
+    } > "${PHP_INI_DIR}/conf.d/opcache-recommended.ini"; \
+    \
+    echo "cgi.fix_pathinfo=1" > ${php_vars} &&\
     echo "upload_max_filesize = 512M"  >> ${php_vars} &&\
     echo "post_max_size = 512M"  >> ${php_vars} &&\
     echo "memory_limit = 512M"  >> ${php_vars} && \
@@ -141,6 +157,9 @@ RUN set -ex; \
     curl -fsSL -o kodbox.zip \
 		"https://api.kodcloud.com/?app/version&download=server.link"; \ 
     unzip kodbox.zip -d /usr/src/kodbox/; \
+    curl -fsSL -o update.zip \
+		"https://api.kodcloud.com/?app/version&download=server.linkUpdate"; \
+    mv update.zip /usr/src/kodbox/; \
     sed -i "s/MyISAM/InnoDB/g" /usr/src/kodbox/app/controller/install/data/mysql.sql; \
     rm kodbox.zip
 
@@ -149,4 +168,4 @@ COPY entrypoint.sh /
 EXPOSE 80 443
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/bin/supervisord","-n","-c","/etc/supervisord.conf"]
+CMD ["supervisord","-n","-c","/etc/supervisord.conf"]

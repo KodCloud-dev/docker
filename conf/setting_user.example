@@ -1,16 +1,16 @@
 <?php 
 $config['database'] = array (
   'DB_TYPE' => 'mysqli',
-  'DB_HOST' => 'MYSQL_SERVER',
-  'DB_PORT' => 'MYSQL_PORT',
-  'DB_USER' => 'MYSQL_USER',
-  'DB_NAME' => 'MYSQL_DATABASE',
+  'DB_HOST' => '{{MYSQL_HOST}}',
+  'DB_PORT' => '{{MYSQL_PORT}}',
+  'DB_USER' => '{{MYSQL_USER}}',
+  'DB_NAME' => '{{MYSQL_DATABASE}}',
   'DB_SQL_LOG' => true,
   'DB_FIELDS_CACHE' => true,
   'DB_SQL_BUILD_CACHE' => false,
 );
-$config['cache']['sessionType'] = 'CACHE_TYPE';
-$config['cache']['cacheType'] = 'CACHE_TYPE';
-$config['cache']['CACHE_TYPE']['host'] = 'CACHE_HOST';
-$config['cache']['CACHE_TYPE']['port'] = 'CACHE_PORT';
-$config['settings']['upload']['chunkSize'] = 1024*1024*5;
+$config['cache']['sessionType'] = '{{CACHE_TYPE}}';
+$config['cache']['cacheType'] = '{{CACHE_TYPE}}';
+$config['cache']['{{CACHE_TYPE}}']['host'] = '{{CACHE_HOST}}';
+$config['cache']['{{CACHE_TYPE}}']['port'] = '{{CACHE_PORT}}';
+#$config['cache']['{{CACHE_TYPE}}']['auth'] = '{{CACHE_PASSWORD}}';

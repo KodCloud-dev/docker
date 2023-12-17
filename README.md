@@ -29,70 +29,46 @@ docker run -d -p 80:80 -v /data:/var/www/html kodcloud/kodbox
 ```bash
 git clone https://github.com/KodCloud-dev/docker.git kodbox
 cd ./kodbox/compose/
-#为了安全，建议先修改数据库密码再启动，修改文件mysql_user_password.txt 和mysql_root_password.txt
+#需在db.env中设置数据库密码，还有yaml中的MYSQL_ROOT_PASSWORD
 docker-compose up -d
 ```
 
 ```yaml
-version: "3.5"
+version: '3.5'
 
 services:
   db:
-    image: mariadb
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    volumes:
-      - "./db:/var/lib/mysql"
-    environment:
-      - "TZ=Asia/Shanghai"
-      - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
-      - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
-      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password"
+    image: mariadb:10.6
     restart: always
-    secrets:
-      - mysql_db
-      - mysql_password
-      - mysql_user
-
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - "./db:/var/lib/mysql"       #./db是数据库持久化目录，可以修改
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    env_file:
+      - db.env
+      
   app:
     image: kodcloud/kodbox
+    restart: always
     ports:
-      - 80:80
-    links:
+      - 80:80                       #左边80是使用端口，可以修改
+    volumes:
+      - "./site:/var/www/html"      #./site是站点目录位置，可以修改
+    environment:
+      - MYSQL_HOST=db
+      - REDIS_HOST=redis
+    env_file:
+      - db.env
+    depends_on:
       - db
       - redis
-    volumes:
-      - "./data:/var/www/html"
-    environment:
-      - "MYSQL_SERVER=db"
-      - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
-      - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_password"
-      - "SESSION_HOST=redis"
-      - "PUID=1050"
-      - "PGID=1051"
-    restart: always
-    secrets:
-      - mysql_db
-      - mysql_password
-      - mysql_user
 
   redis:
     image: redis:alpine
-    environment:
-      - "TZ=Asia/Shanghai"
     restart: always
-
-secrets:
-  mysql_db:
-    file: "./mysql_db.txt"
-  mysql_password:
-    file: "./mysql_password.txt"
-  mysql_user:
-    file: "./mysql_user.txt"
-  mysql_root_password:
-    file: "./mysql_root_password.txt"
-
 ```
 
 ## 通过环境变量自动配置
@@ -104,21 +80,35 @@ kodbox容器支持通过环境变量自动配置。您可以在首次运行时�
 - `MYSQL_DATABASE` 数据库名.
 - `MYSQL_USER` 数据库用户.
 - `MYSQL_PASSWORD` 数据库用户密码.
-- `MYSQL_SERVER` 数据库服务地址.
+- `MYSQL_HOST` 数据库服务地址.
 - `MYSQL_PORT` 数据库端口，默认3306
 
 如果设置了任何值，则在首次运行时不会在安装页面中询问这些值。通过使用数据库类型的所有变量完成配置后，您可以通过设置管理员和密码（仅当您同时设置这两个值时才有效）来配置kodbox实例：
 
-- `KODBOX_ADMIN_USER` 管理员用户名，可以不设置，访问网页时自己填.
-- `KODBOX_ADMIN_PASSWORD` 管理员密码，可以不设置，访问网页时自己填.
+- `KODBOX_ADMIN_USER` 管理员用户名.
+- `KODBOX_ADMIN_PASSWORD` 管理员密码.
 
 **redis/memcached**:
 
-- `SESSION_TYPE` 缓存类型，默认redis，仅当配置`SESSION_HOST`时生效.
-- `SESSION_HOST` 缓存地址.
-- `SESSION_PORT` 缓存端口，默认6379，仅当配置`SESSION_HOST`时生效.
+- `REDIS_HOST` redis地址.
+- `REDIS_HOST_PASSWORD` redis密码.
+- `MEMCACHED_HOST` memcached地址.
+- `MEMCACHED_HOST_PASSWORD` memcached密码.
 
 **uid/gid**:
 
 - `PUID`代表站点运行用户nginx的用户uid
 - `PGID`代表站点运行用户nginx的用户组gid
+
+**PHP参数**
+
+- `FPM_MAX` php-fpm最大进程数, 默认50
+- `FPM_START` php-fpm初始进程数, 默认10
+- `FPM_MIN_SPARE` php-fpm最小空闲进程数, 默认10
+- `FPM_MAX_SPARE` php-fpm最大空闲进程数, 默认30
+
+## 其他设置
+
+- [自定义容器IP](https://docs.kodcloud.com/setup/docker/#ip)
+- [挂载NFS卷](https://docs.kodcloud.com/setup/docker/#nfs)
+- [挂载SMB卷](https://docs.kodcloud.com/setup/docker/#cifssmb)

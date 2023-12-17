@@ -1,59 +1,35 @@
-version: "3.5"
+version: '3.5'
 
 services:
   db:
-    image: mariadb:10.9
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    volumes:
-      - "./db:/var/lib/mysql"
-    environment:
-      - "TZ=Asia/Shanghai"
-      - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
-      - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_user_password"
-      - "MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password"
+    image: mariadb:10.6
     restart: always
-    secrets:
-      - mysql_db
-      - mysql_user
-      - mysql_user_password
-      - mysql_root_password
-
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - "./db:/var/lib/mysql"       #./db是数据库持久化目录，可以修改
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    env_file:
+      - db.env
+      
   app:
-    image: kodcloud/kodbox
+    image: kodcloud/kodbox:1.49.01
+    restart: always
     ports:
-      - 80:80
-    links:
+      - 80:80                       #左边80是使用端口，可以修改
+    volumes:
+      - "./site:/var/www/html"      #./site是站点目录位置，可以修改
+    environment:
+      - MYSQL_HOST=db
+      - REDIS_HOST=redis
+    env_file:
+      - db.env
+    depends_on:
       - db
       - redis
-    volumes:
-      - "./site:/var/www/html"
-    environment:
-      - "MYSQL_SERVER=db"
-      - "MYSQL_DATABASE_FILE=/run/secrets/mysql_db"
-      - "MYSQL_USER_FILE=/run/secrets/mysql_user"
-      - "MYSQL_PASSWORD_FILE=/run/secrets/mysql_user_password"
-      - "CACHE_HOST=redis"
-#      - "PUID=1050"
-#      - "PGID=1051"
-    restart: always
-    secrets:
-      - mysql_db
-      - mysql_user
-      - mysql_user_password
 
   redis:
-    image: redis:alpine3.17
-    environment:
-      - "TZ=Asia/Shanghai"
+    image: redis:alpine
     restart: always
-
-secrets:
-  mysql_db:
-    file: "./mysql_db.txt"
-  mysql_user:
-    file: "./mysql_user.txt"
-  mysql_user_password:
-    file: "./mysql_user_password.txt"
-  mysql_root_password:
-    file: "./mysql_root_password.txt"
