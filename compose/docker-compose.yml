@@ -15,7 +15,7 @@ services:
       - db.env
       
   app:
-    image: kodcloud/kodbox:1.49.01
+    image: kodcloud/kodbox
     restart: always
     ports:
       - 80:80                       #左边80是使用端口，可以修改
