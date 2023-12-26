@@ -2,7 +2,7 @@ name: buildx
 
 on:
   schedule:
-    - cron: '0 0 * * *' # everyday at 0+8am
+    - cron: '0 20 * * *' # everyday at 20+8am
   push:
     branches: master
     tags:
@@ -47,6 +47,7 @@ jobs:
           platforms: |
             linux/amd64
             linux/arm64
+            linux/arm/v7
             linux/ppc64le
             linux/s390x
 

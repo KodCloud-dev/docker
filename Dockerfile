@@ -95,14 +95,14 @@ RUN set -ex; \
     pecl install redis-6.0.2; \
     # pecl install mcrypt-1.0.5; \
     pecl install imagick-3.7.0; \
-    pecl install swoole-5.1.1; \
+    # pecl install swoole-5.1.1; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
-     #   mcrypt \
+        # mcrypt \
         imagick \
-        swoole \
+        # swoole \
     ; \
     rm -r /tmp/pear; \    
     \
