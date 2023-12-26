@@ -151,13 +151,13 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
 
                 install=false
                 CONIG_FILE="/usr/src/kodbox/config/setting_user.php"
-                if [ -f /usr/src/kodbox/config/setting_user.example ] && ! [ -f ${CONIG_FILE} ]; then  
-                    cp /usr/src/kodbox/config/setting_user.example ${CONIG_FILE}
-                fi
 
                 [ -n "${MYSQL_SERVER+x}" ] && MYSQL_HOST=${MYSQL_SERVER}
 
                 if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
+                    if [ -f /usr/src/kodbox/config/setting_user.example ] && ! [ -f ${CONIG_FILE} ]; then  
+                        cp /usr/src/kodbox/config/setting_user.example ${CONIG_FILE}
+                    fi
                     echo "Installing with MySQL database"
                     MYSQL_PORT=${MYSQL_PORT:-3306}
                     sed 's,{{MYSQL_HOST}},'"${MYSQL_HOST}"',' -i ${CONIG_FILE}
@@ -189,9 +189,12 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     CACHE_PORT=${CACHE_PORT:-0}
                 fi
 
-                sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
-                sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
-                sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
+                if [ -n "${CACHE_TYPE+x}" ] && [ -n "${CACHE_HOST+x}" ]; then
+                    sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
+                    sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
+                    sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
+                fi
+
                 if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
                     sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
                     sed 's,{{CACHE_PASSWORD}},'"${REDIS_HOST_PASSWORD}"',' -i $CONIG_FILE
@@ -214,6 +217,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     fi
                     run_path post-installation
                 else
+                    rsync $rsync_options --delete --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
                     echo "Please run the web-based installer on first connect!"
                 fi
             # Upgrade
@@ -221,8 +225,9 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                 run_path pre-upgrade
 
                 if [ -f "/usr/src/kodbox/update.zip" ]; then
-                    unzip -o /usr/src/kodbox/update.zip -d /var/www/html/
-                    chown -R nginx:nginx /var/www/html
+                    unzip -o /usr/src/kodbox/update.zip -d /usr/src/update
+                    rsync $rsync_options /usr/src/kodbox/update/ /var/www/html/
+                    supervisorctl restart php-fpm
                 fi
 
                 run_path post-upgrade
