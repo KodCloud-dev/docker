@@ -226,7 +226,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
 
                 if [ -f "/usr/src/kodbox/update.zip" ]; then
                     unzip -o /usr/src/kodbox/update.zip -d /usr/src/update
-                    rsync $rsync_options /usr/src/kodbox/update/ /var/www/html/
+                    rsync $rsync_options /usr/src/update/ /var/www/html/
                     supervisorctl restart php-fpm
                 fi
 
