@@ -193,17 +193,17 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     run_path pre-installation
 
                     if [ -n "${CACHE_TYPE+x}" ] && [ -n "${CACHE_HOST+x}" ]; then
-                    sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
-                    sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
-                    sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
+                        sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
+                        sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
+                        sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
                     fi
 
                     if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                    sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
-                    sed 's,{{CACHE_PASSWORD}},'"${REDIS_HOST_PASSWORD}"',' -i $CONIG_FILE
+                        sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
+                        sed 's,{{CACHE_PASSWORD}},'"${REDIS_HOST_PASSWORD}"',' -i $CONIG_FILE
                     elif [ -n "${MEMCACHED_HOST_PASSWORD+x}" ]; then
-                    sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
-                    sed 's,{{CACHE_PASSWORD}},'"${MEMCACHED_HOST_PASSWORD}"',' -i $CONIG_FILE
+                        sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
+                        sed 's,{{CACHE_PASSWORD}},'"${MEMCACHED_HOST_PASSWORD}"',' -i $CONIG_FILE
                     fi
 
                     echo "Starting Kodbox installation"
