@@ -189,22 +189,22 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     CACHE_PORT=${CACHE_PORT:-0}
                 fi
 
-                if [ -n "${CACHE_TYPE+x}" ] && [ -n "${CACHE_HOST+x}" ]; then
+                if [ "$install" = true ]; then
+                    run_path pre-installation
+
+                    if [ -n "${CACHE_TYPE+x}" ] && [ -n "${CACHE_HOST+x}" ]; then
                     sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
                     sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
                     sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
-                fi
+                    fi
 
-                if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
+                    if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
                     sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
                     sed 's,{{CACHE_PASSWORD}},'"${REDIS_HOST_PASSWORD}"',' -i $CONIG_FILE
-                elif [ -n "${MEMCACHED_HOST_PASSWORD+x}" ]; then
+                    elif [ -n "${MEMCACHED_HOST_PASSWORD+x}" ]; then
                     sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
                     sed 's,{{CACHE_PASSWORD}},'"${MEMCACHED_HOST_PASSWORD}"',' -i $CONIG_FILE
-                fi
-
-                if [ "$install" = true ]; then
-                    run_path pre-installation
+                    fi
 
                     echo "Starting Kodbox installation"
                     rsync $rsync_options --delete --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
