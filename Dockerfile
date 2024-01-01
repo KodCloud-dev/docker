@@ -13,7 +13,7 @@ RUN set -ex; \
         ffmpeg \
         tzdata \
         unzip \
-        p7zip \
+        # p7zip \
         nginx \
         coreutils \
         # forward request and error logs to docker log collector
@@ -94,14 +94,14 @@ RUN set -ex; \
     pecl install memcached-3.2.0; \
     pecl install redis-6.0.2; \
     # pecl install mcrypt-1.0.5; \
-    pecl install imagick-3.7.0; \
+    # pecl install imagick-3.7.0; \
     # pecl install swoole-5.1.1; \
     \
     docker-php-ext-enable \
         memcached \
         redis \
         # mcrypt \
-        imagick \
+        # imagick \
         # swoole \
     ; \
     rm -r /tmp/pear; \    
