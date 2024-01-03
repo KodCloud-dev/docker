@@ -207,7 +207,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     fi
 
                     echo "Starting Kodbox installation"
-                    rsync $rsync_options --delete --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
+                    rsync $rsync_options --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
                     if [ -f "$CONIG_FILE" ]; then
                         if [ -n "${CACHE_HOST+x}" ]; then
                             waiting_for_connection $CACHE_HOST $CACHE_PORT
@@ -217,7 +217,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     fi
                     run_path post-installation
                 else
-                    rsync $rsync_options --delete --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
+                    rsync $rsync_options --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
                     echo "Please run the web-based installer on first connect!"
                 fi
             # Upgrade
