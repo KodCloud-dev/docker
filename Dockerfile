@@ -1,6 +1,5 @@
-FROM php:8.2-fpm-alpine3.19
+FROM lcr.loongnix.cn/library/php:8.3-fpm-alpine3.19
 
-# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
 RUN set -ex; \
     \
@@ -15,7 +14,6 @@ RUN set -ex; \
         unzip \
         # p7zip \
         nginx \
-        coreutils \
         # forward request and error logs to docker log collector
         && ln -sf /dev/stdout /var/log/nginx/access.log \
         && ln -sf /dev/stderr /var/log/nginx/error.log \
@@ -70,6 +68,8 @@ RUN set -ex; \
         curl-dev \
         imagemagick-dev \
     ; \
+    \
+    ln -sb /bin/busybox /bin/tar; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure intl; \
