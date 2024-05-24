@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   db:
-    image: mariadb:10.6
+    image: lcr.loongnix.cn/library/mariadb:10.5.18
     restart: always
     command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
@@ -15,7 +15,7 @@ services:
       - db.env
       
   app:
-    image: kodcloud/kodbox
+    image: kodbox
     restart: always
     ports:
       - 80:80                       #左边80是使用端口，可以修改
@@ -31,5 +31,5 @@ services:
       - redis
 
   redis:
-    image: redis:alpine
+    image: lcr.loongnix.cn/library/redis:7.0-alpine
     restart: always
