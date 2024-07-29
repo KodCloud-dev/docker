@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.19
+FROM php:8.2-fpm-alpine3.20
 
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
@@ -45,7 +45,6 @@ RUN mkdir -p /etc/nginx/sites-available/; \
     chmod -R g=u /var/www
 
 ADD conf/private-ssl.conf /etc/nginx/sites-available/private-ssl.conf
-ADD conf/setting_user.example /usr/src/kodbox/config/setting_user.example
   
 # install the PHP extensions we need
 RUN set -ex; \

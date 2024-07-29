@@ -87,13 +87,12 @@ kodbox容器支持通过环境变量自动配置。您可以在首次运行时�
 
 - `KODBOX_ADMIN_USER` 管理员用户名.
 - `KODBOX_ADMIN_PASSWORD` 管理员密码.
+- `RANDOM_ADMIN_PASSWORD` 值为·true·时生成随机密码，从日志查看.
 
 **redis/memcached**:
 
 - `REDIS_HOST` redis地址.
-- `REDIS_HOST_PASSWORD` redis密码.
-- `MEMCACHED_HOST` memcached地址.
-- `MEMCACHED_HOST_PASSWORD` memcached密码.
+- `REDIS_PASSWORD` redis密码.
 
 **uid/gid**:
 

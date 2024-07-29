@@ -145,79 +145,71 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
 
                 file_env KODBOX_ADMIN_PASSWORD
                 file_env KODBOX_ADMIN_USER
+                file_env RANDOM_ADMIN_PASSWORD
                 file_env MYSQL_DATABASE
                 file_env MYSQL_PASSWORD
                 file_env MYSQL_USER
 
                 install=false
-                CONIG_FILE="/usr/src/kodbox/config/setting_user.php"
+
+                if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
+                    install_options='--user-name "$KODBOX_ADMIN_USER" --user-pass "$KODBOX_ADMIN_PASSWORD"'
+                elif [ "${RANDOM_ADMIN_PASSWORD}" = "true" ] ;then
+                    install_options='--user-auto 1'
+                else
+                    install_options=''
+                fi
 
                 [ -n "${MYSQL_SERVER+x}" ] && MYSQL_HOST=${MYSQL_SERVER}
 
                 if [ -n "${MYSQL_DATABASE+x}" ] && [ -n "${MYSQL_USER+x}" ] && [ -n "${MYSQL_PASSWORD+x}" ] && [ -n "${MYSQL_HOST+x}" ]; then
-                    if [ -f /usr/src/kodbox/config/setting_user.example ] && ! [ -f ${CONIG_FILE} ]; then  
-                        cp /usr/src/kodbox/config/setting_user.example ${CONIG_FILE}
-                    fi
+
                     echo "Installing with MySQL database"
                     MYSQL_PORT=${MYSQL_PORT:-3306}
-                    sed 's,{{MYSQL_HOST}},'"${MYSQL_HOST}"',' -i ${CONIG_FILE}
-                    sed 's,{{MYSQL_PORT}},'"${MYSQL_PORT}"',' -i ${CONIG_FILE}
-                    sed 's,{{MYSQL_USER}},'"${MYSQL_USER}"',' -i ${CONIG_FILE}
-                    sed 's,{{MYSQL_DATABASE}},'"${MYSQL_DATABASE}"',' -i ${CONIG_FILE}  
-                    sed "N;6 a 'DB_PWD' => '${MYSQL_PASSWORD}'," -i ${CONIG_FILE}
+                    install_options=$install_options' --database mysql --database-name "$MYSQL_DATABASE" --database-user "$MYSQL_USER" --database-pass "$MYSQL_PASSWORD" --database-host "$MYSQL_HOST"'
                     install=true
                 fi
 
-                if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
-                    echo -e "ADM_NAME=${KODBOX_ADMIN_USER}\nADM_PWD=${KODBOX_ADMIN_PASSWORD}" >> /usr/src/kodbox/data/system/fastinstall.lock
-                fi
-
-                if [ -n "${REDIS_HOST+x}" ] || [ -n "${CACHE_HOST+x}" ]; then
+                if [ -n "${REDIS_HOST+x}" ]; then
                     echo "Configuring Redis as session handler"
-                    file_env REDIS_HOST_PASSWORD
-                    CACHE_HOST=${REDIS_HOST:-redis}
-                    CACHE_TYPE=${CACHE_TYPE:-redis}
-                    CACHE_PORT=${CACHE_PORT:-6379}
-                elif [ -n "${MEMCACHED_HOST+x}" ]; then
-                    echo "Configuring Memcached as session handler"
-                    file_env MEMCACHED_HOST_PASSWORD
-                    CACHE_HOST=${MEMCACHED_HOST}
-                    CACHE_TYPE=${CACHE_TYPE:-memcached}
-                    CACHE_PORT=${CACHE_PORT:-11211}
-                else
-                    CACHE_TYPE=${CACHE_TYPE:-file}
-                    CACHE_PORT=${CACHE_PORT:-0}
+                    file_env REDIS_HOST
+                    REDIS_HOST=${REDIS_HOST:-redis}
+                    REDIS_PORT=${REDIS_PORT:-6379}
                 fi
 
                 if [ "$install" = true ]; then
                     run_path pre-installation
 
-                    if [ -n "${CACHE_TYPE+x}" ] && [ -n "${CACHE_HOST+x}" ]; then
-                        sed 's,{{CACHE_TYPE}},'"${CACHE_TYPE}"',' -i $CONIG_FILE
-                        sed 's,{{CACHE_HOST}},'"${CACHE_HOST}"',' -i $CONIG_FILE
-                        sed 's,{{CACHE_PORT}},'"${CACHE_PORT}"',' -i $CONIG_FILE
+                    if [ -n "${REDIS_HOST+x}" ]; then
+                        install_options=$install_options' --cache redis --redis-host "$REDIS_HOST"'
+                        waiting_for_connection $REDIS_HOST $REDIS_PORT
                     fi
 
-                    if [ -n "${REDIS_HOST_PASSWORD+x}" ]; then
-                        sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
-                        sed 's,{{CACHE_PASSWORD}},'"${REDIS_HOST_PASSWORD}"',' -i $CONIG_FILE
-                    elif [ -n "${MEMCACHED_HOST_PASSWORD+x}" ]; then
-                        sed '/CACHE_PASSWORD/s/^#//g' -i $CONIG_FILE
-                        sed 's,{{CACHE_PASSWORD}},'"${MEMCACHED_HOST_PASSWORD}"',' -i $CONIG_FILE
+                    if [ -n "${REDIS_PASSWORD+x}" ]; then
+                        file_env REDIS_PASSWORD
+                        install_options=$install_options' --redis-auth "$REDIS_PASSWORD"'
                     fi
 
                     echo "Starting Kodbox installation"
-                    rsync $rsync_options --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
-                    if [ -f "$CONIG_FILE" ]; then
-                        if [ -n "${CACHE_HOST+x}" ]; then
-                            waiting_for_connection $CACHE_HOST $CACHE_PORT
-                        fi
-                        waiting_for_connection $MYSQL_HOST $MYSQL_PORT
-                        run_as 'php /var/www/html/index.php install/index/auto'
+                    rsync $rsync_options --exclude '/*.zip' /usr/src/kodbox/ /var/www/html/
+                    
+                    waiting_for_connection $MYSQL_HOST $MYSQL_PORT
+                    max_retries=10
+                    try=0
+                    until  [ "$try" -gt "$max_retries" ] || run_as "php /var/www/html/index.php install/index/auto $install_options"
+                    do
+                        echo "Retrying install..."
+                        try=$((try+1))
+                        sleep 10s
+                    done
+                    if [ "$try" -gt "$max_retries" ]; then
+                        echo "Installing of kodbox failed!"
+                        exit 1
                     fi
+
                     run_path post-installation
                 else
-                    rsync $rsync_options --exclude '/*.zip' --exclude '/config/setting_user.example' /usr/src/kodbox/ /var/www/html/
+                    rsync $rsync_options --exclude '/*.zip' /usr/src/kodbox/ /var/www/html/
                     echo "Please run the web-based installer on first connect!"
                 fi
             # Upgrade
