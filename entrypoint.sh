@@ -154,7 +154,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
 
                 if [ -n "${KODBOX_ADMIN_USER+x}" ] && [ -n "${KODBOX_ADMIN_PASSWORD+x}" ]; then
                     install_options='--user-name "$KODBOX_ADMIN_USER" --user-pass "$KODBOX_ADMIN_PASSWORD"'
-                elif [ "${RANDOM_ADMIN_PASSWORD}" = "true" ] ;then
+                elif [ "${RANDOM_ADMIN_PASSWORD+x}" = "true" ] ;then
                     install_options='--user-auto 1'
                 else
                     install_options=''
