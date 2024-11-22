@@ -10,6 +10,13 @@ RUN set -ex; \
         rsync \
         supervisor \
         imagemagick \
+        imagemagick-pdf \
+        imagemagick-jpeg \
+        imagemagick-raw \
+        imagemagick-tiff \
+        imagemagick-heic \
+        imagemagick-webp \
+        imagemagick-svg \
         ffmpeg \
         tzdata \
         unzip \
