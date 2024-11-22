@@ -34,7 +34,6 @@ ADD conf/nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /etc/nginx/sites-available/; \
     mkdir -p /etc/nginx/sites-enabled/; \
     mkdir -p /etc/nginx/ssl/; \
-    rm -Rf /var/www/*; \
     mkdir /var/www/html/; \
     mkdir -p /docker-entrypoint-hooks.d/pre-installation \
              /docker-entrypoint-hooks.d/post-installation \
