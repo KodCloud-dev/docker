@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine3.20
+FROM php:8.3-fpm-alpine3.21
 
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
@@ -97,10 +97,12 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install memcached-3.3.0; \
-    pecl install redis-6.1.0; \
+    pecl install memcached-3.3.0 \
+        --configureoptions 'enable-memcached-igbinary="yes"'; \
+    pecl install redis-6.2.0 \
+        --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     # pecl install mcrypt-1.0.5; \
-    pecl install imagick-3.7.0; \
+    pecl install imagick-3.8.0; \
     # pecl install swoole-5.1.1; \
     \
     docker-php-ext-enable \
@@ -122,8 +124,8 @@ RUN set -ex; \
     apk del --no-network .build-deps
 
 # tweak php-fpm config
-ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
-ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
+ENV fpm_conf=/usr/local/etc/php-fpm.d/www.conf
+ENV php_vars=/usr/local/etc/php/conf.d/docker-vars.ini
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=32'; \
