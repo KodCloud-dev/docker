@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine3.21
+FROM php:8.3-fpm-alpine3.22
 
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
