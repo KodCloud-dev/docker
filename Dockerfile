@@ -163,10 +163,10 @@ VOLUME /var/www/html
 
 RUN set -ex; \
     curl -fsSL -o kodbox.zip \
-		"https://api.kodcloud.com/?app/version&download=server.link"; \ 
+		"https://api.box.kodcloud.com/?app/version&download=server.link"; \ 
     unzip kodbox.zip -d /usr/src/kodbox/; \
     curl -fsSL -o update.zip \
-		"https://api.kodcloud.com/?app/version&download=server.linkUpdate"; \
+		"https://api.box.kodcloud.com/?app/version&download=server.linkUpdate"; \
     mv update.zip /usr/src/kodbox/; \
     sed -i "s/MyISAM/InnoDB/g" /usr/src/kodbox/app/controller/install/data/mysql.sql; \
     rm kodbox.zip
