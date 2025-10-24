@@ -3,6 +3,8 @@ FROM php:8.3-fpm-alpine3.22
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
 RUN set -ex; \
+    addgroup -g 101 -S nginx && \
+    adduser  -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx nginx && \
     \
     apk update && apk upgrade &&\
     apk add --no-cache \
@@ -97,19 +99,19 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
+    pecl install imagick-3.8.0; \
     pecl install memcached-3.3.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
     pecl install redis-6.2.0 \
         --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     # pecl install mcrypt-1.0.5; \
-    pecl install imagick-3.8.0; \
     # pecl install swoole-5.1.1; \
     \
     docker-php-ext-enable \
+        imagick \
         memcached \
         redis \
         # mcrypt \
-        imagick \
         # swoole \
     ; \
     rm -r /tmp/pear; \    
@@ -145,10 +147,10 @@ RUN { \
     echo "max_input_time = 3600"  >> ${php_vars} && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
-        -e "s/pm.max_children = 5/pm.max_children = 50/g" \
-        -e "s/pm.start_servers = 2/pm.start_servers = 10/g" \
-        -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 10/g" \
-        -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 30/g" \
+        -e "s/pm.max_children = */pm.max_children = 50/g" \
+        -e "s/pm.start_servers = */pm.start_servers = 10/g" \
+        -e "s/pm.min_spare_servers = */pm.min_spare_servers = 10/g" \
+        -e "s/pm.max_spare_servers = */pm.max_spare_servers = 30/g" \
         -e "s/;pm.max_requests = 500/pm.max_requests = 500/g" \
         -e "s/user = www-data/user = nginx/g" \
         -e "s/group = www-data/group = nginx/g" \
