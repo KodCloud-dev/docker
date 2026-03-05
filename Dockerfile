@@ -1,4 +1,4 @@
-FROM php:8.3-fpm-alpine3.22
+FROM php:8.4-fpm-alpine3.23
 
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
@@ -25,6 +25,8 @@ RUN set -ex; \
         p7zip \
         nginx \
         coreutils \
+        openjdk21 \
+        poppler-utils \
         # forward request and error logs to docker log collector
         && ln -sf /dev/stdout /var/log/nginx/access.log \
         && ln -sf /dev/stderr /var/log/nginx/error.log \
@@ -99,10 +101,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install imagick-3.8.0; \
-    pecl install memcached-3.3.0 \
+    pecl install imagick-3.8.1; \
+    pecl install memcached-3.4.0 \
         --configureoptions 'enable-memcached-igbinary="yes"'; \
-    pecl install redis-6.2.0 \
+    pecl install redis-6.3.0 \
         --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"'; \
     # pecl install mcrypt-1.0.5; \
     # pecl install swoole-5.1.1; \
@@ -157,7 +159,7 @@ RUN { \
         -e "s/;listen.mode = 0660/listen.mode = 0666/g" \
         -e "s/;listen.owner = www-data/listen.owner = nginx/g" \
         -e "s/;listen.group = www-data/listen.group = nginx/g" \
-        -e "s/listen = 127.0.0.1:9000/listen = \/var\/run\/php-fpm.sock/g" \
+        -e "s/;listen = \/var\/run\/php-fpm.sock/listen = \/var\/run\/php-fpm.sock/g" \
         -e "s/^;clear_env = no$/clear_env = no/" \
         ${fpm_conf}
 
