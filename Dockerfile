@@ -25,7 +25,7 @@ RUN set -ex; \
         p7zip \
         nginx \
         coreutils \
-        openjdk21 \
+        openjdk25 \
         poppler-utils \
         # forward request and error logs to docker log collector
         && ln -sf /dev/stdout /var/log/nginx/access.log \
