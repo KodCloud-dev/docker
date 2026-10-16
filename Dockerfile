@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine3.23
+FROM php:8.5-fpm-alpine3.24
 
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 # entrypoint.sh and dependencies
@@ -80,6 +80,7 @@ RUN set -ex; \
         imagemagick-dev \
     ; \
     \
+    docker-php-ext-configure ftp --with-ftp-ssl; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure intl; \
     docker-php-ext-configure ldap; \
@@ -90,7 +91,6 @@ RUN set -ex; \
         gd \
         intl \
         ldap \
-        opcache \
         pcntl \
         pdo_mysql \
         mysqli \
