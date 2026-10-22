@@ -99,6 +99,20 @@ kodbox容器支持通过环境变量自动配置。您可以在首次运行时�
 - `PUID`代表站点运行用户nginx的用户uid
 - `PGID`代表站点运行用户nginx的用户组gid
 
+**站点自动更新**:
+
+- `KODBOX_AUTO_UPDATE` 默认 `1`，镜像内 kodbox 版本较新时自动覆盖升级已有站点。
+- 设置为 `0` 时，保留已有站点版本和文件，跳过镜像升级覆盖、升级赋权和 `pre-upgrade`/`post-upgrade` 钩子；`before-starting` 钩子仍执行。
+- 首次部署（`/var/www/html` 为空，忽略初始化锁文件）仍正常初始化；已有子目录站点（例如 NFS 挂载到 `/var/www/html/kodbox`）也会保留，不要求根目录存在 `config/version.php`。此开关只控制容器启动时的镜像覆盖，不影响 kodbox 后台手动更新；PHP、Nginx 等运行环境仍随新镜像更新。
+- `KODBOX_UPDATE=1` 也遵守此开关，不会强制覆盖已有站点。
+
+在 Compose 的 `app` 服务中配置，重建容器后生效：
+
+```yaml
+environment:
+  - KODBOX_AUTO_UPDATE=0
+```
+
 **PHP参数**
 
 - `FPM_MAX` php-fpm最大进程数, 默认50
@@ -111,3 +125,14 @@ kodbox容器支持通过环境变量自动配置。您可以在首次运行时�
 - [自定义容器IP](https://docs.kodcloud.com/setup/docker/#ip)
 - [挂载NFS卷](https://docs.kodcloud.com/setup/docker/#nfs)
 - [挂载SMB卷](https://docs.kodcloud.com/setup/docker/#cifssmb)
+
+### PHP 安全更新与站点权限
+
+镜像基于 `php:8.5.12-fpm-alpine3.24`，包含 CVE-2026-109618 和
+CVE-2026-109619 的修复。修改 Dockerfile 后需要重新构建并使用新镜像重建应用容器；
+仅重启旧容器或更新宿主机 PHP 不会生效。Compose 中的 `image` 也需要指向新构建的镜像。
+
+首次安装或镜像内的 kodbox 新版本覆盖站点后，入口脚本会在安装程序或升级后钩子运行前，
+将 `/var/www/html`（包含持久化站点文件）的所有者修复为 `nginx:nginx`，
+兼容 `PUID`/`PGID`，并确保所有者可读写文件、可进入目录。不会沿符号链接修改站点外的目标。
+以非 root 用户运行时不更改所有者，挂载目录需要预先授予该用户所有权。

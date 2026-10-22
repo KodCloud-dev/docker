@@ -19,6 +19,17 @@ run_as() {
     fi
 }
 
+# Repair existing files as well as files copied from the image/update archive.
+# Do not follow symlinks into storage mounted outside the site directory.
+fix_site_permissions() {
+    echo "Setting Kodbox site permissions for $user:$group ..."
+    if [ "$(id -u)" = 0 ]; then
+        chown -hR "$user:$group" /var/www/html
+    fi
+    find /var/www/html -type d -exec chmod u+rwx {} +
+    find /var/www/html -type f -exec chmod u+rw {} +
+}
+
 # Execute all executable files in a given directory in alphanumeric order
 run_path() {
     local hook_folder_path="/docker-entrypoint-hooks.d/$1"
@@ -128,7 +139,12 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
         # shellcheck disable=SC2016
         image_version="$(php -r 'require "/usr/src/kodbox/config/version.php"; echo KOD_VERSION . "." . KOD_VERSION_BUILD;')"
 
-        if version_greater "$image_version" "$installed_version"; then
+        # A custom nginx root may serve an existing site in a mounted subdirectory.
+        # Ignore our lock file when deciding whether this is an empty first install.
+        if [ "${KODBOX_AUTO_UPDATE:-1}" = "0" ] && \
+            [ -n "$(find /var/www/html -mindepth 1 -maxdepth 1 ! -name kodbox-init-sync.lock -print -quit)" ]; then
+            echo "Keeping existing site (KODBOX_AUTO_UPDATE=0); skipping image initialization and upgrade."
+        elif version_greater "$image_version" "$installed_version"; then
             echo "Initializing Kodbox $image_version ..."
             if [ "$installed_version" != "0.0.0" ]; then
                 echo "Upgrading Kodbox from $installed_version ..."
@@ -192,6 +208,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
 
                     echo "Starting Kodbox installation"
                     rsync $rsync_options --exclude '/*.zip' /usr/src/kodbox/ /var/www/html/
+                    fix_site_permissions
                     
                     waiting_for_connection $MYSQL_HOST $MYSQL_PORT
                     max_retries=10
@@ -210,6 +227,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     run_path post-installation
                 else
                     rsync $rsync_options --exclude '/*.zip' /usr/src/kodbox/ /var/www/html/
+                    fix_site_permissions
                     echo "Please run the web-based installer on first connect!"
                 fi
             # Upgrade
@@ -221,6 +239,7 @@ if expr "$1" : "supervisord" 1>/dev/null || [ "${KODBOX_UPDATE:-0}" -eq 1 ]; the
                     rsync $rsync_options /usr/src/update/ /var/www/html/
                 fi
 
+                fix_site_permissions
                 run_path post-upgrade
             fi
 
