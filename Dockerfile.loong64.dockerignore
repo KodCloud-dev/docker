@@ -1,0 +1,6 @@
+# Only image sources belong in the build context; exclude local site/database data.
+**
+!Dockerfile.loong64
+!entrypoint.sh
+!conf/
+!conf/**

@@ -136,3 +136,29 @@ CVE-2026-109619 的修复。修改 Dockerfile 后需要重新构建并使用新�
 将 `/var/www/html`（包含持久化站点文件）的所有者修复为 `nginx:nginx`，
 兼容 `PUID`/`PGID`，并确保所有者可读写文件、可进入目录。不会沿符号链接修改站点外的目标。
 以非 root 用户运行时不更改所有者，挂载目录需要预先授予该用户所有权。
+
+## 龙芯 LoongArch64 镜像
+
+使用独立的 `Dockerfile.loong64`，基础镜像为
+`lcr.loongnix.cn/library/php:8.4-alpine-fpm`。请在 LoongArch64 节点原生构建：
+
+```bash
+docker build -f Dockerfile.loong64 -t kodbox:loong64 .
+docker run -d --name kodbox-loong64 -p 8080:80 \
+  -v kodbox-loong64-data:/var/www/html kodbox:loong64
+```
+
+打开 `http://节点IP:8080` 完成安装。Compose 的 `app` 服务也可以使用
+`image: kodbox:loong64`；数据库和 Redis 镜像需要另行选择支持龙芯架构的版本。
+
+直接使用基础镜像内的 PHP-FPM，搭配项目的 Nginx、Supervisor 和入口脚本，
+支持现有环境变量与持久化目录。
+安装 GD、Intl、LDAP、MySQL、Zip、Imagick、Memcached、Redis 等扩展；
+Java 使用 OpenJDK 21 无界面运行时。关闭 PHP JIT。
+
+默认使用 8 个编译任务，可通过 `--build-arg BUILD_JOBS=4` 降低构建资源占用。
+如节点 Docker 桥接网络无法访问软件源，可在构建时加 `--network host`。
+构建阶段的 Alpine 软件源默认使用阿里云镜像，最终镜像恢复基础镜像的软件源配置。可通过 `--build-arg ALPINE_MIRROR=https://dl-cdn.alpinelinux.org/alpine` 切换。
+构建需要访问 Alpine 软件源、PECL 和可道云下载接口。
+基础镜像标签及可道云下载内容会更新，需要固定版本时可通过
+`--build-arg PHP_BASE=lcr.loongnix.cn/library/php@sha256:实际摘要` 固定基础镜像。
