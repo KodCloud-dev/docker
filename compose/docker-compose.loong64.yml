@@ -1,0 +1,38 @@
+services:
+  db:
+    image: lcr.loongnix.cn/library/mariadb:13.1.1
+    command: --transaction-isolation=READ-COMMITTED
+    restart: always
+    volumes:
+      - "./db:/var/lib/mysql"       # 数据库持久化目录，可以修改
+      # - "./etc/mysql/conf.d:/etc/mysql/conf.d"  # 自定义 MySQL 配置
+    environment:
+      - MYSQL_ROOT_PASSWORD=       # 启动前设置数据库 root 密码
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    env_file:
+      - db.env
+
+  app:
+    image: registry.cn-hangzhou.aliyuncs.com/kodcloud/kodbox:loongarch64
+    restart: always
+    ports:
+      - 80:80                     # 左边为宿主机端口，可以修改
+    volumes:
+      - "./site:/var/www/html"     # 站点持久化目录，可以修改
+    ulimits:
+      nofile:
+        soft: 51200
+        hard: 51200
+    environment:
+      - MYSQL_HOST=db
+      - REDIS_HOST=redis
+    env_file:
+      - db.env
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: lcr.loongnix.cn/library/redis:8.8.1-alpine
+    restart: always

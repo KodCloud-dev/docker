@@ -149,7 +149,28 @@ docker run -d --name kodbox-loong64 -p 8080:80 \
 ```
 
 打开 `http://节点IP:8080` 完成安装。Compose 的 `app` 服务也可以使用
-`image: kodbox:loong64`；数据库和 Redis 镜像需要另行选择支持龙芯架构的版本。
+`image: kodbox:loong64`。
+
+### 龙芯版 Docker Compose 示例
+
+[`compose/docker-compose.loong64.yml`](compose/docker-compose.loong64.yml) 使用以下镜像：
+
+- 可道云：`registry.cn-hangzhou.aliyuncs.com/kodcloud/kodbox:loongarch64`
+- MariaDB：`lcr.loongnix.cn/library/mariadb:13.1.1`
+- Redis：`lcr.loongnix.cn/library/redis:8.8.1-alpine`
+
+启动前设置示例中的 `MYSQL_ROOT_PASSWORD`，并在 `compose/db.env` 中配置
+`MYSQL_DATABASE`、`MYSQL_USER` 和 `MYSQL_PASSWORD`。在龙芯节点运行：
+
+```bash
+cd compose
+docker compose -f docker-compose.loong64.yml up -d
+```
+
+默认访问 `http://节点IP`，数据库和站点分别持久化到 `compose/db` 和
+`compose/site`。应用容器的文件描述符软、硬限制均为 `51200`。
+
+### 构建说明
 
 直接使用基础镜像内的 PHP-FPM，搭配项目的 Nginx、Supervisor 和入口脚本，
 支持现有环境变量与持久化目录。
